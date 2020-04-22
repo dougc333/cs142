@@ -164,7 +164,7 @@ console.log('Test Problem 3:', p3Message);
     document.getElementById("cs142p2").innerHTML = p2Message;
     document.getElementById("cs142p3").innerHTML = p3Message;
   };
-}
+};
 
 })();
 
