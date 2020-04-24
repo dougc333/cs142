@@ -12,6 +12,9 @@ let obj={};
 var cs142MakeMultiFilter;
 var Cs142TemplateProcessor;
 
+(function(){})();
+
+
 (function(){
   obj.t = function(){  
   
