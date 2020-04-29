@@ -5,6 +5,6 @@ function normalize_array(){
 }
 //cant do w function
 arr = [1,2,3]
-console.log("this.arr:",this.arr); //undefined but defined in node console runtime
+console.log("this.arr:",this.arr); //undefined but defined in node interactive console runtime
 normalize_array.call({arr}); //need to make obj, can't use arr
 

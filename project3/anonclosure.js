@@ -21,3 +21,10 @@ let one=add(1);
 console.log(one(2));
 
 //practice chaining functions w. multiple arguments. 
+function sub(a){
+    return function(b){
+        return a-b;
+    }
+}
+let subOne = sub(10);
+console.log(subOne(4));
