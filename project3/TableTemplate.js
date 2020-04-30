@@ -1,5 +1,5 @@
 
-'use strict'
+'use strict';
 
 class TableTemplate{
   static fillIn(id,my_dict, colname){
@@ -9,7 +9,7 @@ class TableTemplate{
     console.log("table rows:",table.rows.length);
     //data rows start from 1, first row is header
     for (let i=0;i<table.rows.length;i++){
-        console.log("table rows:",table.rows[i])
+        console.log("table rows:",table.rows[i]);
         console.log("cell len:",table.rows[i].cells.length);
         for (let j=0;j<table.rows[i].cells.length;j++){
           console.log("cell:",table.rows[i].cells[j]);

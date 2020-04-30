@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 class DatePicker{
   constructor(id, fn){
@@ -18,7 +18,7 @@ class DatePicker{
     let arrowRow = header.insertRow();
     
     let leftArrowCell = arrowRow.insertCell(0);
-    leftArrowCell.textContent="<"
+    leftArrowCell.textContent="<";
     leftArrowCell.setAttribute("id","leftArrow");
     leftArrowCell.addEventListener("click", () => {
         table.remove();
@@ -31,7 +31,7 @@ class DatePicker{
     spaces.colSpan="5"; 
    
     let rightArrowCell = arrowRow.insertCell(2);
-    rightArrowCell.textContent=">"
+    rightArrowCell.textContent=">";
     rightArrowCell.setAttribute("id","rightArrow");
     rightArrowCell.addEventListener("click", () => {
         table.remove();
