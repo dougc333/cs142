@@ -32,3 +32,9 @@ you use won't conflict with these names.
 .cs142-code-name {
   font-family: Courier New, monospace;
 }
+
+.motto-update{
+  color:red;
+  font: 2em sans-serif;
+  background-color: yellowgreen;  
+}

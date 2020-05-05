@@ -13,6 +13,20 @@ import '../../node_modules/prismjs/themes/prism.css';
 /* eslint-disable  react/destructuring-assignment */
 /* eslint no-plusplus: ["error", { "allowForLoopAfterthoughts": true }] */
 
+class Motto extends React.Component{
+  constructor(props){
+    super(props);
+    this.n = cs142models.exampleModel().name;
+    console.log("n:",this.n)
+    if (this.n.trim()==="Doug Chang"){
+      this.n="Jack Beanstalk";
+    }
+  }
+  render(){
+    return this.n + " says "+cs142models.exampleModel().motto;
+  };
+}
+
 // React Components are subclass of React.Componment.
 class Example extends React.Component {
   constructor(props) {
@@ -96,14 +110,14 @@ class Example extends React.Component {
 
     return retVal;
   }
-
+  
   render() {
     return (
       <div className="container Example">
         <h1>CS142 Project#4 React.js Example</h1>
 
         <div className="motto-update">
-          {/* Your problem #1 motto displaying and updating widget goes here */}
+          {<Motto />}
         </div>
 
         <p>
