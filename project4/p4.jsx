@@ -2,9 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 //import DynamicView from './components/dynamic/DynamicView';
-//import './DynamicView.css';
+
+
 import Example from './components/example/Example';
 import States from './components/states/States';
+import Header from './components/header/Header';
+import './components/dynamic/DynamicView.css';
 
 class DynamicView extends React.Component {
     constructor(props) {
@@ -39,6 +42,9 @@ class DynamicView extends React.Component {
 
 
 ReactDOM.render(
-  <DynamicView />,
+    <div>
+      <Header />
+      <DynamicView />
+    </div>,
   document.getElementById('reactapp'),
 );
