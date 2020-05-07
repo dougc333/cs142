@@ -1,4 +1,5 @@
 import React from 'react';
+import './Header.css';
 
 class Header extends React.Component{
   constructor(props){
@@ -6,7 +7,13 @@ class Header extends React.Component{
   }
 
   render(){
-      return <header>This is a header tag not head tag. <img src="jack.jpg"></img></header>;
+      return (
+      <header className="top">
+        <figure className="fig"> 
+          <img className = "scale_image" src="jack.jpg"/> 
+          <figcaption>This is an image caption. </figcaption>
+      </figure>
+      </header>);
   }
 }
 

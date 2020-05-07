@@ -24,7 +24,7 @@ class Motto extends React.Component{
   }
   render(){
     return this.n + " says "+cs142models.exampleModel().motto;
-  };
+  }
 }
 
 // React Components are subclass of React.Componment.

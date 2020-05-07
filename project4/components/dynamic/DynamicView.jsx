@@ -1,8 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-
-import Example from './components/example/Example';
-import States from './components/states/States';
+import Example from '../example/Example';
+import States from '../states/States';
 import './DynamicView.css';
 
 class DynamicView extends React.Component {
@@ -12,25 +10,26 @@ class DynamicView extends React.Component {
        isToggleOn: true,
        num:0 
       };
-      this.num_click = 0;
+      //this.num_click = 0;
       this.handleClick = this.handleClick.bind(this);
     }
   
     handleClick() {
-      this.setState((state, num_click) => ({
+      this.setState((state) => ({
         isToggleOn: !state.isToggleOn
       }));
       this.state.num++;
     }
   
+    
     render() {
       return (
         <div>
-          <button onClick={this.handleClick}>
-            {this.state.isToggleOn ? "ON" : "OFF"}
+          <button className='button' onClick={this.handleClick}>
+            {this.state.isToggleOn ? "Example" : "States"}
           </button>
-          <div id="nc">{this.state.num}</div>
-          <div id='stuff'>{this.state.isToggleOn ? <Example /> : <States />}</div>
+          <div className="nc">NumClicks:{this.state.num}</div>
+          <div className='stuff'>{this.state.isToggleOn ? <Example /> : <States />}</div>
         </div>
       );
     }
