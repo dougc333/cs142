@@ -5,6 +5,8 @@ import DynamicView from './components/dynamic/DynamicView';
 import Header from './components/header/Header';
 import './components/dynamic/DynamicView.css';
 
+
+
 ReactDOM.render(
     <div>
       <Header />

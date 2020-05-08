@@ -16,14 +16,14 @@ import '../../node_modules/prismjs/themes/prism.css';
 class Motto extends React.Component{
   constructor(props){
     super(props);
-    this.n = cs142models.exampleModel().name;
+    this.n = window.cs142models.exampleModel().name;
     console.log("n:",this.n)
     if (this.n.trim()==="Doug Chang"){
       this.n="Jack Beanstalk";
     }
   }
   render(){
-    return this.n + " says "+cs142models.exampleModel().motto;
+    return this.n + " says "+window.cs142models.exampleModel().motto;
   }
 }
 

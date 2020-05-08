@@ -18,7 +18,6 @@ class DynamicView extends React.Component {
       this.setState((state) => ({
         isToggleOn: !state.isToggleOn
       }));
-      this.state.num++;
     }
   
     
@@ -28,7 +27,6 @@ class DynamicView extends React.Component {
           <button className='button' onClick={this.handleClick}>
             {this.state.isToggleOn ? "Example" : "States"}
           </button>
-          <div className="nc">NumClicks:{this.state.num}</div>
           <div className='stuff'>{this.state.isToggleOn ? <Example /> : <States />}</div>
         </div>
       );
