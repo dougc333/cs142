@@ -11,7 +11,14 @@ import './userPhotos.css';
 class UserPhotos extends React.Component {
   constructor(props) {
     super(props);
-
+    this.photo={
+     _id:'',
+     first_name:'',
+     last_name:'',
+     location:'',
+     description:'',
+     occupation:''
+    }
   }
 
   render() {

@@ -17,6 +17,9 @@ import UserPhotos from './components/userPhotos/UserPhotos';
 class PhotoShare extends React.Component {
   constructor(props) {
     super(props);
+    console.log("photoshare ctor");
+    console.log('photoshare ctor userListModel():',window.cs142models.userListModel());
+
   }
 
   render() {

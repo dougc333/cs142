@@ -15,8 +15,18 @@ import './userList.css';
 class UserList extends React.Component {
   constructor(props) {
     super(props);
+    console.log("userList ctor");
+    console.log('userList ctor userListModel():',window.cs142models.userListModel());
+    this.userId = window.cs142models.userListModel();
+    console.log(this.userId);
+    console.log(this.userId[0].first_name, this.userId[0].last_name);
+    this.handleClick = this.handleClick.bind(this);
   }
 
+  handleClick(event,props){
+    console.log("foobar:",event);
+    console.log("I am foobar", props);
+  }
   render() {
     return (
       <div>
@@ -26,16 +36,16 @@ class UserList extends React.Component {
           display your users like so:
         </Typography>
         <List component="nav">
-          <ListItem>
-            <ListItemText primary="Item #1" />
+          <ListItem onClick={this.handleClick}>
+            <ListItemText primary={this.userId[0].first_name+" "+this.userId[0].last_name}  />
           </ListItem>
           <Divider />
           <ListItem>
-            <ListItemText primary="Item #2" />
+            <ListItemText primary={this.userId[1].first_name+" "+this.userId[1].last_name} />
           </ListItem>
           <Divider />
           <ListItem>
-            <ListItemText primary="Item #3" />
+            <ListItemText primary={this.userId[2].first_name+" "+this.userId[2].last_name} />
           </ListItem>
           <Divider />
         </List>

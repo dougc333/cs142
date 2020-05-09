@@ -23,7 +23,8 @@
     "react-dom": "^16.5.2",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
-    "url-loader": "^1.1.2"
+    "url-loader": "^1.1.2",
+    "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
