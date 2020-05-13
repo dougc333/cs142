@@ -10,6 +10,10 @@ import './TopBar.css';
 class TopBar extends React.Component {
   constructor(props) {
     super(props);
+    console.log("TopBar ctor",this.props)
+  }
+  componentDidUpdate(){
+    console.log("topbar componentdidupdate")
   }
 
   render() {
@@ -17,7 +21,7 @@ class TopBar extends React.Component {
       <AppBar className="cs142-topbar-appBar" position="absolute">
         <Toolbar>
           <Typography variant="h5" color="inherit">
-              This is the TopBar component
+            Name:{this.props.usrid}
           </Typography>
         </Toolbar>
       </AppBar>

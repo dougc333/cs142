@@ -1,0 +1,1 @@
+if I do setState({a:10}) followed by console.log(a) I get a='', the setState isnt guaranteeed to execute by the time I try to print it. To get around this I can do setState({a:10},funcdtion(){console.log(a)}). Does setState return a promise? Or is this a separate async scheduling issue? 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useImperativeHandle } from 'react';
 import {
   Divider,
   List,
@@ -15,43 +15,46 @@ import './userList.css';
 class UserList extends React.Component {
   constructor(props) {
     super(props);
-    console.log("userList ctor");
-    console.log('userList ctor userListModel():',window.cs142models.userListModel());
-    this.userId = window.cs142models.userListModel();
-    console.log(this.userId);
-    console.log(this.userId[0].first_name, this.userId[0].last_name);
-    this.handleClick = this.handleClick.bind(this);
+    //this.userId = window.cs142models.userListModel();
+    this.userId = props.userIdArr;
+    console.log("UserList ctor userId:",this.userId);
+    this.state={
+      clickedUser:'',
+      current_userId:''
+    }
   }
 
-  handleClick(event,props){
-    console.log("foobar:",event);
-    console.log("I am foobar", props);
+  handleNewUser = (event) =>{
+    this.props.onNewUserID(event.currentTarget.getAttribute('value'))
   }
+
+  handleClick=(event)=>{
+    console.log("handleClick event.currentTarget.getAttribute('value')",event.currentTarget.getAttribute('value'))    
+    console.log("handleClick event.target.childNodes:",event.target.childNodes[0]);
+    console.log("handleClick event.currentTarget.childNodes:",event.currentTarget.childNodes[0]);
+    
+    this.setState({
+      clickedUser:event.target.childNodes[0],
+      current_userId:event.currentTarget.getAttribute('value')},()=>{
+        console.log("verify state UserList:",this.state)
+      })
+    
+    this.handleNewUser(event)
+  }
+
   render() {
     return (
       <div>
-        <Typography variant="body1">
-          This is the user list, which takes up 3/12 of the window.
-          You might choose to use <a href="https://material-ui.com/demos/lists/">Lists</a> and <a href="https://material-ui.com/demos/dividers">Dividers</a> to
-          display your users like so:
-        </Typography>
         <List component="nav">
-          <ListItem onClick={this.handleClick}>
-            <ListItemText primary={this.userId[0].first_name+" "+this.userId[0].last_name}  />
+          {this.userId.map( (user)=>
+          <div key={user._id} >
+          <ListItem onClick={this.handleClick} value={user._id}>
+           <ListItemText  primary={user.first_name+" "+user.last_name}></ListItemText>
           </ListItem>
-          <Divider />
-          <ListItem>
-            <ListItemText primary={this.userId[1].first_name+" "+this.userId[1].last_name} />
-          </ListItem>
-          <Divider />
-          <ListItem>
-            <ListItemText primary={this.userId[2].first_name+" "+this.userId[2].last_name} />
-          </ListItem>
-          <Divider />
+          <Divider/>
+          </div>
+          )}
         </List>
-        <Typography variant="body1">
-          The model comes in from window.cs142models.userListModel()
-        </Typography>
       </div>
     );
   }

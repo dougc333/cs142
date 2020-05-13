@@ -1,0 +1,13 @@
+foobar=()=>{
+    console.log("foobar this.current_userId:",this.state.current_userId)
+    if(this.state.current_userId!==undefined){
+      console.log("conditional rendering!!!!!! here we go!!!@@@")
+      return(
+        <UserDetail usr={this.state.current_userId}></UserDetail>
+      );
+    }else{
+      console.log("no cond rend")
+    }
+
+    
+  }

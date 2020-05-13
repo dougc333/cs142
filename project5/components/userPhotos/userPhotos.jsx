@@ -3,6 +3,7 @@ import {
   Typography
 } from '@material-ui/core';
 import './userPhotos.css';
+import { cloneNode } from '@babel/types';
 
 
 /**
@@ -19,6 +20,23 @@ class UserPhotos extends React.Component {
      description:'',
      occupation:''
     }
+    console.log("UserPhotos ctor")
+    this.state={
+      photos: window.cs142models.photoOfUserModel(this.props.match.params.userId),
+      userId:this.props.match.params.userId
+    }
+  }
+
+  componentDidMount(){
+    console.log("UserPhotos componentDidMount")
+  }
+
+  componentDidUpdate(){
+    console.log("componentDidUpdate")
+  }
+
+  addPhotos(){
+    
   }
 
   render() {
@@ -33,7 +51,7 @@ class UserPhotos extends React.Component {
           {JSON.stringify(window.cs142models.photoOfUserModel(this.props.match.params.userId))}
         </Typography>
       </Typography>
-
+      {this.addPhotos()}
     );
   }
 }
