@@ -16,7 +16,7 @@ class UserList extends React.Component {
   constructor(props) {
     super(props);
     //this.userId = window.cs142models.userListModel();
-    console.log("UserList ctor userId:",this.userId);
+    //console.log("UserList ctor userId:",this.userId);
     //console.log("UserList ctor props.userIdArr:",props.userIdArr)
     this.userId = props.userIdArr,
     this.state={

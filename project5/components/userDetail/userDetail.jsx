@@ -1,9 +1,7 @@
 import React from 'react';
-//import ReactDOM from 'react-dom';
 import {
-  Typography,Link,Button
+  Typography,Link
 } from '@material-ui/core';
-//import Link from 'react-router-dom'
 import './userDetail.css';
 
 import { forOfStatement, thisTypeAnnotation } from '@babel/types';
@@ -35,11 +33,15 @@ class UserDetail extends React.Component {
  
   appendMe=()=>{
     console.log("this.props.match.params.userId:",this.props.match.params.userId)
+    console.log("appendMe:",window.cs142models.userModel(this.props.match.params.userId))
     console.log("appendMe:",window.cs142models.userModel(this.props.match.params.userId).first_name,
                  window.cs142models.userModel(this.props.match.params.userId).last_name)
     return (
-      <Typography component={'span'} color="primary">
-        {window.cs142models.userModel(this.props.match.params.userId).first_name+" "+window.cs142models.userModel(this.props.match.params.userId).last_name }
+      <Typography component={'div'} color="primary" key={window.cs142models.userModel(this.props.match.params.userId._id)}>
+        <div>{window.cs142models.userModel(this.props.match.params.userId).first_name+" "+window.cs142models.userModel(this.props.match.params.userId).last_name }</div>
+        <div  className="txt-color">Description:{window.cs142models.userModel(this.props.match.params.userId).description}</div>
+        <div  className="txt-color">Location:{window.cs142models.userModel(this.props.match.params.userId).description}</div>
+        <div  className="txt-color">Occupation:{window.cs142models.userModel(this.props.match.params.userId).occupation}</div>
       </Typography>
     
     )
