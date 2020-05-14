@@ -7,6 +7,7 @@ import {
   Grid, Typography, Paper
 } from '@material-ui/core';
 import './styles/main.css';
+import fetchModel from './lib/fetchModelData'
 
 // import necessary components
 import TopBar from './components/topBar/TopBar';
@@ -21,8 +22,11 @@ class PhotoShare extends React.Component {
     this.state={
       userId:window.cs142models.userListModel(),
       current_userId:'',
-      current_userName:''
+      current_userName:'',
+      fetchData:'',
+      focus:''
     }
+    
   }
 
   //passed to Userlist, click on UserList element executes and returns newUserId 
@@ -34,10 +38,6 @@ class PhotoShare extends React.Component {
     
   }
 
-  getUserID=()=>{
-    console.log("getUserID")
-    return this.state.current_userId;
-  }
   //input: userid 
   //output: returns name for given userid 
   getName(uid){
@@ -51,9 +51,19 @@ class PhotoShare extends React.Component {
     }
     
   }
+  componentDidMount(){
+    console.log("photoshare ComponentDidMount")
+    fetchModel('http://localhost:3000/user/list')
+    .then(data=>{console.log("then data",data); this.setState({fetchData:data},function(){
+      console.log("compnentDidMount setState:",this.state.fetchData)
+    })})
+    .catch(error=>console.log(error))
+  }
+  
   componentDidUpdate(){
     console.log("photoShare componentDidUpdate! this.state.current_userId",this.state.current_userId)
     this.redirectMe()
+    //should reset the state and let react rerender. 
   }
 
   redirectMe(){

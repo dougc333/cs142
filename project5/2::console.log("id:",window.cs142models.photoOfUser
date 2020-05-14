@@ -1,0 +1,9 @@
+//console.log("id:",window.cs142models.photoOfUserModel(this.props.match.params.userId)[i]._id)
+      //console.log("date_time:",window.cs142models.photoOfUserModel(this.props.match.params.userId)[i].date_time)
+      //console.log("addPhotos file_name:",window.cs142models.photoOfUserModel(this.props.match.params.userId)[i].file_name)
+      //userPhotos.push(
+      //  <Typography color="primary" 
+      //  key={window.cs142models.photoOfUserModel(this.props.match.params.userId)[i].file_name}> 
+      //  {window.cs142models.photoOfUserModel(this.props.match.params.userId)[i].file_name}</Typography>)
+
+      //console.log("user_id:",window.cs142models.photoOfUserModel(this.props.match.params.userId)[i].user_id)

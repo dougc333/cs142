@@ -17,11 +17,25 @@ var Promise = require("Promise");
 
 function fetchModel(url) {
   return new Promise(function(resolve, reject) {
-      console.log(url);
-      setTimeout(() => reject({status: 501, statusText: "Not Implemented"}),0);
+      console.log("fetchModel:",url);
+      //setTimeout(() => reject({status: 501, statusText: "Not Implemented"}),0);
       // On Success return:
       // resolve({data: getResponseObject});
+      let xhr = new XMLHttpRequest();
+      xhr.open("GET",url);
+      //console.log('a');
+      xhr.onload=()=>{
+        console.log('onload',xhr.status);
+        if (xhr.status>=200 && xhr.status<300){
+          //console.log("b ",xhr.responseText);
+          resolve(xhr.responseText);
+        }else{
+          reject(xhr.statusText);
+        }
+      };
+      xhr.send();
   });
 }
+
 
 export default fetchModel;

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  AppBar, Toolbar, Typography
+  AppBar, Toolbar, Typography,Grid, GridItemsAlignment
 } from '@material-ui/core';
 import './TopBar.css';
 
@@ -18,12 +18,17 @@ class TopBar extends React.Component {
 
   render() {
     return (
-      <AppBar className="cs142-topbar-appBar" position="absolute">
+      <AppBar className="cs142-topbar-appBar" position="absolute" >
         <Toolbar>
-          <Typography variant="h5" color="inherit">
-            Name:{this.props.usrid}
+          <Typography variant="h5" color="inherit" component='span' style={{ flex: 1 }}>
+          Name:DC
+          </Typography>
+        
+          <Typography variant="h5" color="inherit" component='span' style={{ flex: 1 }}>
+          User Name:{this.props.usrid}
           </Typography>
         </Toolbar>
+        
       </AppBar>
     );
   }

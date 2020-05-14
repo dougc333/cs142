@@ -16,14 +16,15 @@ class UserDetail extends React.Component {
   constructor(props) {
     super(props);
     this.state={
-      usrdet: '',
+      usrdet: window.cs142models.userModel(this.props.match.params.userId),
       usrid:''
     }    
-    console.log("UserDetail ctor")
+    console.log("UserDetail ctor propsUserId:",this.props.match.params.userId)
+    console.log("UserDetail ctor:",this.state.usrdet)
   }
 
   componentDidUpdate(){
-    console.log("UserDetail componentDidUpdate")
+    console.log("UserDetail componentDidUpdate props userId:",this.props.match.params.userId)
     if (this.state.usrid !== this.props.match.params.userId){
       this.setState({
         usrdet:window.cs142models.userModel(this.props.match.params.userId),
@@ -33,32 +34,31 @@ class UserDetail extends React.Component {
   }
  
   appendMe=()=>{
-    console.log("appendMe:",window.cs142models.userModel(this.props.match.params.userId).first_name,window.cs142models.userModel(this.props.match.params.userId).last_name)
+    console.log("this.props.match.params.userId:",this.props.match.params.userId)
+    console.log("appendMe:",window.cs142models.userModel(this.props.match.params.userId).first_name,
+                 window.cs142models.userModel(this.props.match.params.userId).last_name)
     return (
-      <div>
+      <Typography component={'span'} color="primary">
         {window.cs142models.userModel(this.props.match.params.userId).first_name+" "+window.cs142models.userModel(this.props.match.params.userId).last_name }
-      </div>
+      </Typography>
+    
     )
   }
-
-
+  appendLink(){
+    console.log("UserDetail appendLink: propsUserId:",this.props.match.params.userId)
+    return( 
+      <Link className='photo-link' color="secondary" href={'http://localhost:3000/photo-share.html#/photos/'+this.props.match.params.userId}>Photos</Link>
+    )
+    
+  }
 
   render() {
     return (
       <div id="ud">
-      <Typography variant="body1">
-      <Link href='http://localhost:3000/photo-share.html#/photos/57231f1a30e4351f4e9f4bda'>photos</Link>
-      <Button href="http://localhost:3000/photo-share.html#/photos/57231f1a30e4351f4e9f4bda" color="primary">
-        Link
-      </Button>
-        This should be the UserDetail view of the PhotoShare app. Since
-        it is invoked from React Router the params from the route will be
-        in property match. So this should show details of user:
-        this.props.match.params.userId}. You can fetch the model for the
-        user from window.cs142models.userModel(userId).
-      </Typography>
       {this.appendMe()}
-      
+      <Typography variant="body1">
+      {this.appendLink()}
+      </Typography>
       </div>
     );
   }
