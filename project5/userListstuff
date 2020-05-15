@@ -1,4 +1,0 @@
-//console.log("handleClick event.currentTarget.getAttribute('value')",event.currentTarget.getAttribute('value'))    
-    //console.log("handleClick event.target.childNodes:",event.target.childNodes[0]);
-    ///console.log("handleClick event.currentTarget.childNodes:",event.currentTarget.childNodes[0]);
-    

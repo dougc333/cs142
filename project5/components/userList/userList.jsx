@@ -15,21 +15,28 @@ import './userList.css';
 class UserList extends React.Component {
   constructor(props) {
     super(props);
-    //this.userId = window.cs142models.userListModel();
-    //console.log("UserList ctor userId:",this.userId);
-    //console.log("UserList ctor props.userIdArr:",props.userIdArr)
-    this.userId = props.userIdArr,
     this.state={
+      userId : '',
       clickedUser:'',
-      current_userId:''
+      current_userId:'',
+      prevProps:this.props,
     }
+  }
+
+  componentDidMount(){
+    let fm = this.state.prevProps.userIdArr
+    this.setState({userId:fm})
+    
+  }
+  //called if we call setState in componentDidMount, else this isnt called
+  componentDidUpdate(){
   }
 
   handleNewUser = (event) =>{
     this.props.onNewUserID(event.currentTarget.getAttribute('value'))
   }
 
-  handleClick=(event)=>{
+  handleClick=(event)=>{ 
     this.setState({
       clickedUser:event.target.childNodes[0],
       current_userId:event.currentTarget.getAttribute('value')},()=>{
@@ -38,20 +45,26 @@ class UserList extends React.Component {
     this.handleNewUser(event)
   }
 
+  append(){
+    let e=[]
+    for(let i=0;i<this.state.userId.length;i++){
+      e.push(
+          <div key={this.state.userId[i]._id}>
+          <ListItem >
+            <ListItemText onClick = {this.handleClick} value={this.state.userId[i]._id} primary={this.state.userId[i].first_name+" "+this.state.userId[i].last_name}>{i}</ListItemText>
+          </ListItem>
+          <Divider />
+          </div>
+      )
+    }
+    return e
+  }
+
   render() {
     return (
-      <div>
         <List component="nav">
-          {this.userId.map( (user)=>
-            <div key={user._id} >
-            <ListItem onClick={this.handleClick} value={user._id}>
-              <ListItemText  primary={user.first_name+" "+user.last_name}></ListItemText>
-            </ListItem>
-            <Divider/>
-            </div>
-          )}
+           {this.append()}
         </List>
-      </div>
     );
   }
 }

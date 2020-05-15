@@ -1,4 +1,0 @@
- {this.props.usr ? <div>yes</div>:<div>no</div>}
-       <div>
-         {this.props.usr ? <div>{Object.entries(window.cs142models.userModel(this.props.usr))}</div>:<div>no</div>}
-       </div>

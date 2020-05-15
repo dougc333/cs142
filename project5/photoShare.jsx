@@ -15,12 +15,12 @@ import UserDetail from './components/userDetail/UserDetail';
 import UserList from './components/userList/UserList';
 import UserPhotos from './components/userPhotos/UserPhotos';
 import { conditionalExpression } from '@babel/types';
-
+//window.cs142models.userListModel()
 class PhotoShare extends React.Component {
   constructor(props) {
     super(props);
     this.state={
-      userId:window.cs142models.userListModel(),
+      userId:'',
       current_userId:'',
       current_userName:'',
       fetchData:'',
@@ -31,7 +31,7 @@ class PhotoShare extends React.Component {
 
   //passed to Userlist, click on UserList element executes and returns newUserId 
   set_CurrentUserID = (newUserId) => {
-    console.log("photoShare set_currentUserID newUserId:",newUserId)
+    console.log("******photoShare set_currentUserID newUserId:",newUserId)
     this.setState({current_userId:newUserId, current_userName:this.getName(newUserId)},function(){
       console.log("photoshare verify state:",this.state)
     });
@@ -41,12 +41,12 @@ class PhotoShare extends React.Component {
   //input: userid 
   //output: returns name for given userid 
   getName(uid){
-    console.log("getName uid:",uid)
-    //console.log("getName entries:",Object.entries(this.state.userId))
-    for (let i =0;i<Object.entries(this.state.userId).length;i++ ){
-      //console.log("x:",Object.entries(this.state.userId)[i][1]['_id'])
-      if(Object.entries(this.state.userId)[i][1]['_id']===uid){
-        return Object.entries(this.state.userId)[i][1]['first_name']+" "+Object.entries(this.state.userId)[i][1]['last_name']
+    //console.log("photoShare getName uid:",uid)
+    //console.log("****getName entries:",Object.entries(this.state.fetchData))
+    for (let i =0;i<Object.entries(this.state.fetchData).length;i++ ){
+      console.log("x:",Object.entries(this.state.fetchData)[i][1]['_id'])
+      if(Object.entries(this.state.fetchData)[i][1]['_id']===uid){
+        return Object.entries(this.state.fetchData)[i][1]['first_name']+" "+Object.entries(this.state.fetchData)[i][1]['last_name']
       }
     }
     
@@ -54,8 +54,8 @@ class PhotoShare extends React.Component {
   componentDidMount(){
     console.log("photoshare ComponentDidMount")
     fetchModel('http://localhost:3000/user/list')
-    .then(data=>{console.log("then data",data); this.setState({fetchData:data},function(){
-      console.log("compnentDidMount setState:",this.state.fetchData)
+    .then(data=>{console.log("then data",data); this.setState({fetchData:JSON.parse(data)},function(){
+      console.log("Photoshare compnentDidMount setState:",this.state.fetchData)
     })})
     .catch(error=>console.log(error))
   }
@@ -72,6 +72,13 @@ class PhotoShare extends React.Component {
     } 
   }
 
+  add(){
+    if (this.state.fetchData.length>1){
+      //console.log("ADD**** this.state.fetchData:",this.state.fetchData)
+      return <UserList userIdArr={this.state.fetchData} onNewUserID={this.set_CurrentUserID } />
+    }
+  }
+
   render() {
     return (
       <HashRouter>
@@ -83,7 +90,7 @@ class PhotoShare extends React.Component {
         <div className="cs142-main-topbar-buffer"/>
         <Grid item sm={3}>
           <Paper  className="cs142-main-grid-item">
-            <UserList userIdArr={this.state.userId} onNewUserID={this.set_CurrentUserID } />
+            {this.add()}
             {this.redirectMe()}
           </Paper>
         </Grid>
