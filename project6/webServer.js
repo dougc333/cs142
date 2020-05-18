@@ -138,6 +138,7 @@ app.get('/user/list', function (request, response) {
  */
 app.get('/user/:id', function (request, response) {
     var id = request.params.id;
+    console.log("/user/:id",id)
     var user = cs142models.userModel(id);
     if (user === null) {
         console.log('User with _id:' + id + ' not found.');
