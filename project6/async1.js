@@ -19,6 +19,7 @@ async function foo(arr){
 console.log(arr)
 foo(arr)
 console.log(arr)
+
 (async ()=>{
     console.log("aa")
     let f = await function(){arr[1] = arr[1]+2;console.log(arr)}

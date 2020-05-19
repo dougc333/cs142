@@ -29,9 +29,9 @@ class UserPhotos extends React.Component {
     .then(data=>{
       //console.log("UserPhotos ctor then data",data); 
       this.setState({photos:JSON.parse(data),userId:this.props.match.params.userId,isMounted:true}
-      //,function(){
-      //console.log("UserPhotos ctor this.state.photos:",this.state.photos)
-      //}
+      ,function(){
+      console.log("UserPhotos ctor this.state.photos:",this.state.photos)
+      }
     )})
     .catch(error=>console.log(error))
   }
@@ -40,15 +40,15 @@ class UserPhotos extends React.Component {
     this.props.didMount(t)
   }
   componentDidUpdate(){
-    //console.log("UserPhotos componentDidUpdate userId:",this.props.match.params.userId)
+    console.log("UserPhotos componentDidUpdate userId:",this.props.match.params.userId)
     if (this.state.userId !== this.props.match.params.userId){
     fetchModel(`http://localhost:3000/photosOfUser/${this.props.match.params.userId}`)
     .then(data=>{
-     // console.log("UserPhotos componentDidUpdate then data",data); 
+      console.log("UserPhotos componentDidUpdate then data",data); 
       this.setState({photos:JSON.parse(data),userId:this.props.match.params.userId}
-     // ,function(){
-      //console.log("UserPhotos componentDidUpdate this.state.photos:",this.state.photos)
-      //}
+      ,function(){
+      console.log("UserPhotos componentDidUpdate this.state.photos:",this.state.photos)
+      }
     )})
     .catch(error=>console.log(error))
     }

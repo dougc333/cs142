@@ -17,6 +17,29 @@ var conn= mongoose.connect('mongodb://localhost/cs142project6', { useNewUrlParse
 //var db = mongoose.connection;
 //db.on('error', console.error.bind("e"));
 //db.once('open',function(){console.log("connect!!")})
+
+var user_info=[]
+console.log("build user data")
+User.find({},function(err,info){
+  if(err){
+      console.log("err")
+      response.status(500).send(JSON.stringify(err));
+      return;
+  }else{
+    (()=>{for (let i=0;i<info.length;i++){
+        console.log("user find info:",info[i])
+        user_info.push({"_id":info[i]._id,
+                        "user_id":info[i].user_id,
+                        "first_name":info[i].first_name, 
+                        "last_name":info[i].last_name})
+        console.log("user info length in loop:",user_info.length)
+    };console.log("in iife",user_info.length)})();
+  }
+})
+console.log("user_info length:",user_info.length)
+console.log("after user_info:",user_info)
+console.log("********************")
+
 var info=''
 Photo.find({},function(err,info){
     if(err){
@@ -26,7 +49,12 @@ Photo.find({},function(err,info){
     uids=[]
     for(let i=0;i<info.length;i++){
      console.log(i,info[i])
-     uids.push(info[i].user_id)
+     uids.push({
+        "_id":info[i]._id,
+        "user_id":info[i].user_id,
+        "file_name":info[i].file_name,
+        "comments":info[i].comments,
+     })
     }
     let u= '5ec06bab46a9ca3953fa5583'
     m=[]
@@ -44,7 +72,5 @@ Photo.find({},function(err,info){
     console.log("uids:",uids)
     //mongoose.disconnect()
     }
-    
-    
 })
 

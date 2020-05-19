@@ -84,17 +84,20 @@ describe('CS142 Photo App API - ', function () {
 
         it('has the correct number elements', function (done) {
             assert.strictEqual(userList.length, cs142Users.length);
+            console.log("userList.length",userList.length," cs142Users.length", cs142Users.length)
             done();
         });
 
 
         it('has an entry for each of the users', function (done) {
             async.each(cs142Users, function (realUser, callback) {
+                console.log("realUser:",realUser.first_name,realUser.last_name)
                 var user = _.find(userList, {
                     first_name: realUser.first_name,
                     last_name: realUser.last_name
                 });
-                assert(user, 'could not find user ' + realUser.first_name + ' ' + realUser.last_name);
+                console.log("processing user list after async each")
+                assert(user, 'aaa could not find user ' + realUser.first_name + ' ' + realUser.last_name);
                 assert.strictEqual(_.countBy(userList, '_id')[user._id], 1, 'Multiple users with id:' + user._id);
                 var extraProps = _.difference(Object.keys(removeMongoProperties(user)), userListProperties);
                 assert.strictEqual(extraProps.length, 0, 'user object has extra properties: ' + extraProps);
@@ -133,7 +136,7 @@ describe('CS142 Photo App API - ', function () {
                     first_name: realUser.first_name,
                     last_name: realUser.last_name
                 });
-                assert(user, 'could not find user ' + realUser.first_name + ' ' + realUser.last_name);
+                assert(user, 'bbb could not find user ' + realUser.first_name + ' ' + realUser.last_name);
                 var userInfo;
                 var id = user._id;
                 http.get({

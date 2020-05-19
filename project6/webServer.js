@@ -92,6 +92,7 @@ app.get('/test/:p1', function (request, response) {
             // We got the object - return it in JSON format.
             console.log('SchemaInfo', info[0]);
             response.end(JSON.stringify(info[0]));
+            
         });
     } else if (param === 'counts') {
         // In order to return the counts of all the collections we need to do an async
@@ -117,7 +118,6 @@ app.get('/test/:p1', function (request, response) {
                     obj[collections[i].name] = collections[i].count;
                 }
                 response.end(JSON.stringify(obj));
-
             }
         });
     } else {
@@ -130,7 +130,31 @@ app.get('/test/:p1', function (request, response) {
  * URL /user/list - Return all the User object.
  */
 app.get('/user/list', function (request, response) {
-    response.status(200).send(cs142models.userListModel());
+    //need parameters from request? no. none needed. 
+
+    //response.status(200).send(cs142models.userListModel());
+    User.find({},function(err,info)
+    {
+      if(err){
+        console.error('Doing /user/list error:', err);
+        response.status(500).send(JSON.stringify(err));
+        return;
+      }else{
+        let userList=[]
+        console.log("User length",info.length)
+        info.map(x=>{
+                userList.push({'id':x._id, 
+                                "first_nane":x.first_name, 
+                                "last_name":x.last_name,
+                            });
+                //console.log("user:",x)  
+                })
+        //console.log("userList",userList)
+        response.status(200).send(JSON.stringify(userList));
+      }
+
+    });
+
 });
 
 /*
@@ -139,26 +163,65 @@ app.get('/user/list', function (request, response) {
 app.get('/user/:id', function (request, response) {
     var id = request.params.id;
     console.log("/user/:id",id)
-    var user = cs142models.userModel(id);
-    if (user === null) {
-        console.log('User with _id:' + id + ' not found.');
-        response.status(400).send('Not found');
-        return;
+
+    if (id === null) {
+      console.log('User with _id:' + id + ' not found.');
+      response.status(400).send('Not found');
+      return;
     }
-    response.status(200).send(user);
+    User.find({'_id':id},function(err,info)
+    {
+      if(err){
+        console.error('Doing /user/list error:', err);
+        response.status(500).send(JSON.stringify(err));
+        return;
+      }else{
+        let userList=[]
+        console.log("User length",info.length)
+        info.map(x=>{
+                userList.push({'id':x._id, 
+                                "first_nane":x.first_name, 
+                                "last_name":x.last_name,
+                            });
+                console.log("user:",x)  
+                })
+        console.log("userList",userList)
+        response.status(200).send(JSON.stringify(userList));
+      }
+
+    });
+    //var user = cs142models.userModel(id);
+    
+    //response.status(200).send(user);
 });
 
 /*
  * URL /photosOfUser/:id - Return the Photos for User (id)
  */
 app.get('/photosOfUser/:id', function (request, response) {
+    console.log("asdfasdfasdfasdf")
     var id = request.params.id;
+    console.log("photosOfUser id:",id)
+    //var photos=[]
+    //var users=[]
+    console.log("photos param id:",id)
+    if (id === null) {
+        console.log('User with _id:' + id + ' not found.');
+        response.status(400).send('Not found');
+        return;
+    }
     var photos = cs142models.photoOfUserModel(id);
+    //var user = cs142models.userModel(id);
+    console.log("photos:",photos)
+    //s onsole.log("user",user,user.length)
+    
+   
     if (photos.length === 0) {
         console.log('Photos for user with _id:' + id + ' not found.');
         response.status(400).send('Not found');
         return;
     }
+
     response.status(200).send(photos);
 });
 
