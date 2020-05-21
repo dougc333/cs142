@@ -70,9 +70,6 @@ describe('CS142 Photo App API - ', function () {
                 });
 
                 response.on('end', function () {
-                    //(function(){
-                    //  console.log(" userlist end aaaaaa");
-                    //})();
                     userList = JSON.parse(responseBody);
                     assert.strictEqual(response.statusCode, 200, 'HTTP response status code not OK');
                     
@@ -218,7 +215,7 @@ describe('CS142 Photo App API - ', function () {
         it('can get each of the user photos with /photosOfUser/:id', function (done) {
             async.each(cs142Users, function (realUser, callback) {
                 // validate the the user is in the list once
-                console.log("starting test run realUser:",realUser)
+                //console.log("starting test run realUser:",realUser)
                 var user = _.find(userList, {
                     first_name: realUser.first_name,
                     last_name: realUser.last_name
@@ -226,7 +223,7 @@ describe('CS142 Photo App API - ', function () {
                 assert(user, 'could not find user ' + realUser.first_name + ' ' + realUser.last_name);
                 var photos;
                 var id = user._id;
-                console.log("testing id:",id, 'for user:',user )
+                //console.log("testing id:",id, 'for user:',user )
                 http.get({
                     hostname: host,
                     port: port,
@@ -241,9 +238,9 @@ describe('CS142 Photo App API - ', function () {
                     });
 
                     response.on('end', function () {
-                        console.log("end responseBody",responseBody)
+                        //console.log("end responseBody",responseBody)
                         photos = JSON.parse(responseBody);
-                        console.log("serverAPI after parsing end photos:",photos)
+                        //console.log("serverAPI after parsing end photos:",photos)
                         assert.strictEqual(response.statusCode, 200, 'HTTP response status code not OK');
                         
                         var real_photos = cs142models.photoOfUserModel(realUser._id);
@@ -292,7 +289,7 @@ describe('CS142 Photo App API - ', function () {
                 done();
             });
         });
-        /** 
+        
         it('can return a 400 status on an invalid id to photosOfUser', function (done) {
             http.get({
                 hostname: host,
@@ -310,7 +307,7 @@ describe('CS142 Photo App API - ', function () {
                 });
             });
         });
-        */
+        
     });
     
 });

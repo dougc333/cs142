@@ -135,12 +135,12 @@ app.get('/user/list', function (request, response) {
     User.find({},function(err,info)
     {
       if(err){
-        console.error('Doing /user/list error:', err);
+        //console.error('Doing /user/list error:', err);
         response.status(500).send(JSON.stringify(err));
         return;
       }else{
         let userList=[]
-        console.log("User length",info.length)
+        //console.log("User length",info.length)
         info.map(x=>{
                 userList.push({'_id':x._id, 
                                 "first_name":x.first_name, 
@@ -160,7 +160,7 @@ app.get('/user/list', function (request, response) {
  */
 app.get('/user/:id', function (request, response) {
     var id = request.params.id;
-    console.log("/user/:id",id);
+    //console.log("/user/:id",id);
 
     if (id === null || id.length!==24) {
       //console.log('User with _id:' + id + ' not found.');
@@ -195,12 +195,10 @@ app.get('/user/:id', function (request, response) {
  */
 
 app.get('/photosOfUser/:id', function (request, response) {
-    console.log("*******************")
-   
     var id = request.params.id;
-    console.log("photos param id:",id)
+    //console.log("photos param id:",id)
     if (id === null || id.length!==24) {
-        console.log('User with _id:' + id + ' not found.');
+        //console.log('User with _id:' + id + ' not found.');
         response.status(400).send('Not found');
         return;
     }
@@ -208,7 +206,7 @@ app.get('/photosOfUser/:id', function (request, response) {
     //console.log("build user data for all users")
     User.find({},function(err,info){
       if(err){
-        console.log("**** USER.find err")
+        //console.log("**** USER.find err")
         response.status(500).send(JSON.stringify(err));
         return;
       }else{
@@ -225,35 +223,35 @@ app.get('/photosOfUser/:id', function (request, response) {
       }
     })
     Photo.find({'user_id':id},function(err,info){
-        console.log("user info in photo.find:",user_info)
+        //console.log("user info in photo.find:",user_info)
         var photos=[]
         if(err){
-          console.log('PhotoFind err',err)
+          //console.log('PhotoFind err',err)
           response.status(500).send(JSON.stringify(err));
           return;
         }else{
-          console.log('Photo find info.len',info.length)  
+          //console.log('Photo find info.len',info.length)  
           for(let i=0;i<info.length;i++){
-            console.log(i,info[i])
-            console.log("len comments:",(info[i].comments.length))
+            //console.log(i,info[i])
+            //console.log("len comments:",(info[i].comments.length))
             if(info[i].comments.length>0){
-              console.log("comment i:",i," :",info[i].comments) //comments is array
+              //console.log("comment i:",i," :",info[i].comments) //comments is array
               var comm=[]
               for(let j=0;j<info[i].comments.length;j++){
-                console.log("comment j:",j," :",info[i].comments[j]) //comment, date_time, _id, user_id
+                //console.log("comment j:",j," :",info[i].comments[j]) //comment, date_time, _id, user_id
                 //find user_id for this user
-                console.log("comment[j] user_id:",info[i].comments[j].user_id)
+                //console.log("comment[j] user_id:",info[i].comments[j].user_id)
                 for(let k=0;k<user_info.length;k++){
-                    console.log("user_info :",user_info[k].user_id.toString(),info[i].comments[j].user_id.toString() )
+                    //console.log("user_info :",user_info[k].user_id.toString(),info[i].comments[j].user_id.toString() )
                     if(info[i].comments[j].user_id.toString()===user_info[k].user_id.toString()){
-                      console.log("match")
+                      //console.log("match")
                       var user_obj=
                       JSON.parse(JSON.stringify({
                           "_id":user_info[k].user_id,
                           "first_name":user_info[k].first_name,
                           "last_name":user_info[k].last_name
                       }))
-                      console.log("user_obj:",user_obj)
+                      //console.log("user_obj:",user_obj)
                     }
                 }
                 comm.push(
@@ -264,7 +262,7 @@ app.get('/photosOfUser/:id', function (request, response) {
                     "user":user_obj
                     }))
                 )
-                console.log("comm:",comm)
+                //console.log("comm:",comm)
               }
             }
             if (comm!==undefined){
@@ -288,16 +286,16 @@ app.get('/photosOfUser/:id', function (request, response) {
                   }))
                   )
             }
-            console.log("photos:",photos)
+            //console.log("photos:",photos)
           }//end for
           if (photos.length === 0) {
-              console.log('Photos for user with _id:' + id + ' not found.');
+              //console.log('Photos for user with _id:' + id + ' not found.');
               response.status(400).send('Not found');
               return;
           }
           if (photos.length>0){
-            console.log("before send, photos:",photos)
-            console.log("typeof",typeof(photos))
+            //console.log("before send, photos:",photos)
+            //console.log("typeof",typeof(photos))
             //let t = JSON.parse(JSON.stringify(photos))
             response.status(200).send(photos);
           }
