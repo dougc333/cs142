@@ -135,12 +135,10 @@ app.get('/user/list', function (request, response) {
     User.find({},function(err,info)
     {
       if(err){
-        //console.error('Doing /user/list error:', err);
         response.status(500).send(JSON.stringify(err));
         return;
       }else{
         let userList=[]
-        //console.log("User length",info.length)
         info.map(x=>{
                 userList.push({'_id':x._id, 
                                 "first_name":x.first_name, 
