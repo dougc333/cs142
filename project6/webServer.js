@@ -45,7 +45,7 @@ var express = require('express');
 var app = express();
 
 // XXX - Your submission should work without this line. Comment out or delete this line for tests and before submission!
-var cs142models = require('./modelData/photoApp.js').cs142models;
+//var cs142models = require('./modelData/photoApp.js').cs142models;
 
 mongoose.connect('mongodb://localhost/cs142project6', { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -131,7 +131,6 @@ app.get('/test/:p1', function (request, response) {
  */
 app.get('/user/list', function (request, response) {
     //need parameters from request? no. none needed. 
-
     //response.status(200).send(cs142models.userListModel());
     User.find({},function(err,info)
     {
@@ -143,8 +142,8 @@ app.get('/user/list', function (request, response) {
         let userList=[]
         console.log("User length",info.length)
         info.map(x=>{
-                userList.push({'id':x._id, 
-                                "first_nane":x.first_name, 
+                userList.push({'_id':x._id, 
+                                "first_name":x.first_name, 
                                 "last_name":x.last_name,
                             });
                 //console.log("user:",x)  
@@ -152,7 +151,6 @@ app.get('/user/list', function (request, response) {
         //console.log("userList",userList)
         response.status(200).send(JSON.stringify(userList));
       }
-
     });
 
 });
@@ -162,67 +160,152 @@ app.get('/user/list', function (request, response) {
  */
 app.get('/user/:id', function (request, response) {
     var id = request.params.id;
-    console.log("/user/:id",id)
+    console.log("/user/:id",id);
 
-    if (id === null) {
-      console.log('User with _id:' + id + ' not found.');
+    if (id === null || id.length!==24) {
+      //console.log('User with _id:' + id + ' not found.');
       response.status(400).send('Not found');
       return;
     }
-    User.find({'_id':id},function(err,info)
-    {
+
+    User.find({'_id':id},function(err,info){
       if(err){
-        console.error('Doing /user/list error:', err);
+        //console.error('Doing /user/list error:', err);
         response.status(500).send(JSON.stringify(err));
         return;
       }else{
-        let userList=[]
-        console.log("User length",info.length)
-        info.map(x=>{
-                userList.push({'id':x._id, 
-                                "first_nane":x.first_name, 
-                                "last_name":x.last_name,
-                            });
-                console.log("user:",x)  
-                })
-        console.log("userList",userList)
-        response.status(200).send(JSON.stringify(userList));
+        //console.log("info find length should be 1!!",info.length)
+        //console.log("info",info)
+        let return_obj={
+            '_id':info[0]._id, 
+            "first_name":info[0].first_name, 
+            "last_name":info[0].last_name,
+            "location":info[0].location,
+            "description":info[0].description,
+            "occupation":info[0].occupation,
+        }
+        //console.log("return_obj:",return_obj)        
+        response.status(200).end(JSON.stringify(return_obj));
       }
-
-    });
-    //var user = cs142models.userModel(id);
-    
-    //response.status(200).send(user);
+    });    
 });
 
 /*
  * URL /photosOfUser/:id - Return the Photos for User (id)
  */
+
 app.get('/photosOfUser/:id', function (request, response) {
-    console.log("asdfasdfasdfasdf")
+    console.log("*******************")
+   
     var id = request.params.id;
-    console.log("photosOfUser id:",id)
-    //var photos=[]
-    //var users=[]
     console.log("photos param id:",id)
-    if (id === null) {
+    if (id === null || id.length!==24) {
         console.log('User with _id:' + id + ' not found.');
         response.status(400).send('Not found');
         return;
     }
-    var photos = cs142models.photoOfUserModel(id);
-    //var user = cs142models.userModel(id);
-    console.log("photos:",photos)
-    //s onsole.log("user",user,user.length)
-    
-   
-    if (photos.length === 0) {
-        console.log('Photos for user with _id:' + id + ' not found.');
-        response.status(400).send('Not found');
+    var user_info=[]
+    //console.log("build user data for all users")
+    User.find({},function(err,info){
+      if(err){
+        console.log("**** USER.find err")
+        response.status(500).send(JSON.stringify(err));
         return;
-    }
-
-    response.status(200).send(photos);
+      }else{
+        (()=>{for (let i=0;i<info.length;i++){
+          //console.log("user find info:",info[i])
+          user_info.push({
+                "user_id":info[i]._id,
+                "first_name":info[i].first_name, 
+                "last_name":info[i].last_name})
+          //console.log("user info length in loop:",user_info.length)
+          };
+          //console.log("in iife",user_info.length)
+        })();
+      }
+    })
+    Photo.find({'user_id':id},function(err,info){
+        console.log("user info in photo.find:",user_info)
+        var photos=[]
+        if(err){
+          console.log('PhotoFind err',err)
+          response.status(500).send(JSON.stringify(err));
+          return;
+        }else{
+          console.log('Photo find info.len',info.length)  
+          for(let i=0;i<info.length;i++){
+            console.log(i,info[i])
+            console.log("len comments:",(info[i].comments.length))
+            if(info[i].comments.length>0){
+              console.log("comment i:",i," :",info[i].comments) //comments is array
+              var comm=[]
+              for(let j=0;j<info[i].comments.length;j++){
+                console.log("comment j:",j," :",info[i].comments[j]) //comment, date_time, _id, user_id
+                //find user_id for this user
+                console.log("comment[j] user_id:",info[i].comments[j].user_id)
+                for(let k=0;k<user_info.length;k++){
+                    console.log("user_info :",user_info[k].user_id.toString(),info[i].comments[j].user_id.toString() )
+                    if(info[i].comments[j].user_id.toString()===user_info[k].user_id.toString()){
+                      console.log("match")
+                      var user_obj=
+                      JSON.parse(JSON.stringify({
+                          "_id":user_info[k].user_id,
+                          "first_name":user_info[k].first_name,
+                          "last_name":user_info[k].last_name
+                      }))
+                      console.log("user_obj:",user_obj)
+                    }
+                }
+                comm.push(
+                    JSON.parse(JSON.stringify({
+                    "comment":info[i].comments[j].comment,
+                    "date_time":info[i].comments[j].date_time,
+                    "_id":info[i].comments[j]._id,
+                    "user":user_obj
+                    }))
+                )
+                console.log("comm:",comm)
+              }
+            }
+            if (comm!==undefined){
+              photos.push(
+                  JSON.parse(JSON.stringify({
+                "_id":(info[i]._id),
+                "user_id":info[i].user_id,
+                "file_name":info[i].file_name,
+                "comments":comm,
+                "date_time":info[i].date_time
+              }))
+              )
+            }else{
+                photos.push(
+                  JSON.parse(JSON.stringify( {
+                    "_id":(info[i]._id),
+                    "user_id":(info[i].user_id),
+                    "file_name":info[i].file_name,
+                    "comments":[],
+                    "date_time":info[i].date_time
+                  }))
+                  )
+            }
+            console.log("photos:",photos)
+          }//end for
+          if (photos.length === 0) {
+              console.log('Photos for user with _id:' + id + ' not found.');
+              response.status(400).send('Not found');
+              return;
+          }
+          if (photos.length>0){
+            console.log("before send, photos:",photos)
+            console.log("typeof",typeof(photos))
+            //let t = JSON.parse(JSON.stringify(photos))
+            response.status(200).send(photos);
+          }
+          
+        }
+       
+    })
+    
 });
 
 

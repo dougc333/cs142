@@ -13,18 +13,19 @@ arr=[1,2,3]
 
 async function foo(arr){
     
-    let f = await function(){arr[1] = arr[1]+2;console.log(arr)}
-    
+   for(let i=0;i<arr.length;i++){
+       console.log(i,arr)
+       var res = await function(){
+           arr[i]=arr[i]+10
+           console.log('in await function: i',i)
+       }
+       console.log(res())
+       console.log('in loop:',arr)
+   }
+   
 }
-console.log(arr)
 foo(arr)
-console.log(arr)
-
-(async ()=>{
-    console.log("aa")
-    let f = await function(){arr[1] = arr[1]+2;console.log(arr)}
-    
-})();
+console.log("final:",arr)
 
 //async.each(arr,function(x,callback){
 //  console.log("x",x)
