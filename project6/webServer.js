@@ -130,8 +130,6 @@ app.get('/test/:p1', function (request, response) {
  * URL /user/list - Return all the User object.
  */
 app.get('/user/list', function (request, response) {
-    //need parameters from request? no. none needed. 
-    //response.status(200).send(cs142models.userListModel());
     User.find({},function(err,info)
     {
       if(err){
@@ -144,9 +142,7 @@ app.get('/user/list', function (request, response) {
                                 "first_name":x.first_name, 
                                 "last_name":x.last_name,
                             });
-                //console.log("user:",x)  
                 })
-        //console.log("userList",userList)
         response.status(200).send(JSON.stringify(userList));
       }
     });
@@ -158,22 +154,16 @@ app.get('/user/list', function (request, response) {
  */
 app.get('/user/:id', function (request, response) {
     var id = request.params.id;
-    //console.log("/user/:id",id);
-
     if (id === null || id.length!==24) {
-      //console.log('User with _id:' + id + ' not found.');
       response.status(400).send('Not found');
       return;
     }
 
     User.find({'_id':id},function(err,info){
       if(err){
-        //console.error('Doing /user/list error:', err);
         response.status(500).send(JSON.stringify(err));
         return;
       }else{
-        //console.log("info find length should be 1!!",info.length)
-        //console.log("info",info)
         let return_obj={
             '_id':info[0]._id, 
             "first_name":info[0].first_name, 
@@ -182,7 +172,6 @@ app.get('/user/:id', function (request, response) {
             "description":info[0].description,
             "occupation":info[0].occupation,
         }
-        //console.log("return_obj:",return_obj)        
         response.status(200).end(JSON.stringify(return_obj));
       }
     });    

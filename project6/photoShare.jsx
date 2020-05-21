@@ -90,7 +90,11 @@ class PhotoShare extends React.Component {
   add(){
     if (this.state.fetchData.length>1){
       //console.log("ADD**** this.state.fetchData:",this.state.fetchData)
-      return <UserList userIdArr={this.state.fetchData} onNewUserID={this.set_CurrentUserID } />
+      return (
+        <div>
+      <UserList userIdArr={this.state.fetchData} onNewUserID={this.set_CurrentUserID } />
+      </div>
+      )
     }
   }
 

@@ -3,11 +3,12 @@ import {
   Divider,
   List,
   ListItem,
-  ListItemText,
+  ListItemText,Badge,circle
 }
 from '@material-ui/core';
 import './userList.css';
-
+import CommentIcon from '@material-ui/icons/Comment';
+import PhotoIcon from '@material-ui/icons/Photo';
 /**
  * Define UserList, a React componment of CS142 project #5
  */
@@ -54,6 +55,14 @@ class UserList extends React.Component {
           <div key={x._id}>
           <ListItem >
             <ListItemText onClick = {this.handleClick} value={x._id} primary={x.first_name+" "+x.last_name}></ListItemText>
+            <CommentIcon color="primary"></CommentIcon>
+      <Badge color="secondary" badgeContent={33} >
+      {circle}
+      </Badge>
+      <PhotoIcon></PhotoIcon>
+      <Badge color="secondary" badgeContent={3} >
+      {circle}
+      </Badge>     
           </ListItem>
           <Divider />
           </div>
