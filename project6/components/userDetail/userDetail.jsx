@@ -4,6 +4,7 @@ import {
 } from '@material-ui/core';
 import './userDetail.css';
 import fetchModel from '../../lib/fetchModelData'
+import Axios from 'axios';
 
 //import { forOfStatement, thisTypeAnnotation } from '@babel/types';
 
@@ -22,10 +23,10 @@ class UserDetail extends React.Component {
     //console.log("UserDetail componentDidMount prevProps:",this.state.prevProps)
     //console.log("UserDetail componentDidMount this.state.match.userId:",this.props.match.params.userId)
     //console.log("UserDetail componentDidMount this.state.fetch_userdet:",this.state.fetch_usrdet)
-    fetchModel(`http://localhost:3000/user/${this.props.match.params.userId}`)
-    .then(data=>{
+    Axios.get(`http://localhost:3000/user/${this.props.match.params.userId}`)
+    .then(response=>{
       //console.log("UserDetail then data",data); 
-       this.setState({fetch_usrdet:JSON.parse(data)}
+       this.setState({fetch_usrdet:response.data}
        //,function(){
        //console.log("UserDetail fetch this.state.fetch_userdet:",this.state.fetch_usrdet)
        //}
@@ -44,10 +45,10 @@ class UserDetail extends React.Component {
     //console.log("UserDetail componentDidUpdate fetch_userdet:",this.fetch_usrdet)
     
     if (this.state.usrid !== this.props.match.params.userId){
-    fetchModel(`http://localhost:3000/user/${this.props.match.params.userId}`)
-    .then(data=>{
+    Axios.get(`http://localhost:3000/user/${this.props.match.params.userId}`)
+    .then(response=>{
       //console.log("UserDetail ComponentDidMount then data",data); 
-      this.setState({fetch_usrdet:JSON.parse(data),usrid:this.props.match.params.userId}
+      this.setState({fetch_usrdet:response.data,usrid:this.props.match.params.userId}
       //,function(){
       //console.log("UserDetail ComponentDidMount this.state.fetch_userdet:",this.state.fetch_usrdet)
       //}

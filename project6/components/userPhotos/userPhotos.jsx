@@ -5,7 +5,7 @@ import {
 import './userPhotos.css';
 //import { cloneNode } from '@babel/types';
 import fetchModel from '../../lib/fetchModelData'
-
+import Axios from 'axios'
 /**
  * Define UserPhotos, a React componment of CS142 project #5
  */
@@ -25,10 +25,10 @@ class UserPhotos extends React.Component {
     this.handlePhotos(true)
     //console.log("UserPhotos componentDidMount userId:",this.props.match.params.userId)
     //console.log("UserPhotos componentDidMount photos:",this.state.photos)
-    fetchModel(`http://localhost:3000/photosOfUser/${this.props.match.params.userId}`)
-    .then(data=>{
+    Axios.get(`http://localhost:3000/photosOfUser/${this.props.match.params.userId}`)
+    .then(response=>{
       //console.log("UserPhotos ctor then data",data); 
-      this.setState({photos:JSON.parse(data),userId:this.props.match.params.userId,isMounted:true}
+      this.setState({photos:response.data,userId:this.props.match.params.userId,isMounted:true}
       //,function(){
       //console.log("UserPhotos ctor this.state.photos:",this.state.photos)
       //}
@@ -42,10 +42,10 @@ class UserPhotos extends React.Component {
   componentDidUpdate(){
     //console.log("UserPhotos componentDidUpdate userId:",this.props.match.params.userId)
     if (this.state.userId !== this.props.match.params.userId){
-    fetchModel(`http://localhost:3000/photosOfUser/${this.props.match.params.userId}`)
-    .then(data=>{
+    Axios.get(`http://localhost:3000/photosOfUser/${this.props.match.params.userId}`)
+    .then(response=>{
      // console.log("UserPhotos componentDidUpdate then data",data); 
-      this.setState({photos:JSON.parse(data),userId:this.props.match.params.userId}
+      this.setState({photos:response.data,userId:this.props.match.params.userId}
      // ,function(){
       //console.log("UserPhotos componentDidUpdate this.state.photos:",this.state.photos)
       //}

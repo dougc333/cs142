@@ -13,6 +13,8 @@ import UserDetail from './components/userDetail/UserDetail';
 import UserList from './components/userList/UserList';
 import UserPhotos from './components/userPhotos/UserPhotos';
 import SinglePhoto from './components/userPhotos/SinglePhoto'
+import axios from 'axios'
+
 
 class PhotoShare extends React.Component {
   constructor(props) {
@@ -57,15 +59,15 @@ class PhotoShare extends React.Component {
       if(Object.entries(this.state.fetchData)[i][1]['_id']===uid){
         return Object.entries(this.state.fetchData)[i][1]['first_name']+" "+Object.entries(this.state.fetchData)[i][1]['last_name']
       }
-    }
-    
+    } 
   }
+
   componentDidMount(){
     //console.log("photoshare ComponentDidMount prevProps:",this.state.prevProps)
-    fetchModel('http://localhost:3000/user/list')
-    .then(data=>{
-      //console.log("then data",data); 
-      this.setState({fetchData:JSON.parse(data)}
+    axios.get('http://localhost:3000/user/list')
+    .then((response)=>{
+      //console.log("then data",response.data); 
+      this.setState({fetchData:response.data}
       //,function(){
       //console.log("Photoshare compnentDidMount setState:",this.state.fetchData)
       //}

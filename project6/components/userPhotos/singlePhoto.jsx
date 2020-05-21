@@ -8,6 +8,7 @@ import {
 import './userPhotos.css';
 //import { cloneNode } from '@babel/types';
 import fetchModel from '../../lib/fetchModelData'
+import Axios from 'axios';
 
 /**
  * Define UserPhotos, a React componment of CS142 project #5
@@ -30,13 +31,13 @@ class SinglePhoto extends React.Component {
       this.handlePhotos(true)
       //console.log("UserPhotos componentDidMount userId:",this.props.match.params.userId)
       //console.log("UserPhotos componentDidMount photos:",this.state.photos)
-      fetchModel(`http://localhost:3000/photosOfUser/${this.props.match.params.userId}`)
-      .then(data=>{
-        console.log("SinglePhotos ctor then data",data); 
-        this.setState({photos:JSON.parse(data),userId:this.props.match.params.userId,isMounted:true}
-        ,function(){
-        console.log("UserPhotos ctor this.state.photos:",this.state.photos)
-        }
+      Axios.get(`http://localhost:3000/photosOfUser/${this.props.match.params.userId}`)
+      .then(response=>{
+        console.log("SinglePhotos ctor then data",response.data); 
+        this.setState({photos:response.data,userId:this.props.match.params.userId,isMounted:true}
+        //,function(){
+        //console.log("UserPhotos ctor this.state.photos:",this.state.photos)
+        //}
       )})
       .catch(error=>console.log(error))
     }
@@ -47,13 +48,13 @@ class SinglePhoto extends React.Component {
     componentDidUpdate(){
       console.log("SinglePhoto componentDidUpdate userId:",this.props.match.params.userId)
       if (this.state.userId !== this.props.match.params.userId){
-      fetchModel(`http://localhost:3000/photosOfUser/${this.props.match.params.userId}`)
-      .then(data=>{
+      Axios.get(`http://localhost:3000/photosOfUser/${this.props.match.params.userId}`)
+      .then(response=>{
        // console.log("UserPhotos componentDidUpdate then data",data); 
-        this.setState({photos:JSON.parse(data),userId:this.props.match.params.userId}
-        ,function(){
-        console.log("SinglePhoto componentDidUpdate this.state.photos:",this.state.photos)
-        }
+        this.setState({photos:response.data,userId:this.props.match.params.userId}
+        //,function(){
+        //console.log("SinglePhoto componentDidUpdate this.state.photos:",this.state.photos)
+        //}
       )})
       .catch(error=>console.log(error))
       }
