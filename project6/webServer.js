@@ -30,7 +30,9 @@
  *                      should have all the Comments on the Photo (JSON format)
  *
  */
-
+var session = require('express-session');
+var bodyParser = require('body-parser');
+var multer = require('multer');
 var mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
@@ -43,7 +45,8 @@ var SchemaInfo = require('./schema/schemaInfo.js');
 
 var express = require('express');
 var app = express();
-
+app.use(session({secret: 'secretKey', resave: false, saveUninitialized: false}));
+app.use(bodyParser.json());
 // XXX - Your submission should work without this line. Comment out or delete this line for tests and before submission!
 //var cs142models = require('./modelData/photoApp.js').cs142models;
 
@@ -177,10 +180,40 @@ app.get('/user/:id', function (request, response) {
     });    
 });
 
+app.get('/commentsOfUser/:id',function(req, res){
+  var id = req.params.id
+  if(id===null || id.length!==24){
+    res.status(400).send("Not found")
+    return
+  }
+  
+  Photo.find({'user_id':id},function(err,info){
+    console.log("user_id:",id)
+    let returnObj={numComments:0, numPhotos:0}
+    console.log("info:",info)
+    let numPhotos=0;
+    let numComments=0;
+    if(info!==undefined){
+      for (let i=0;i<info.length;i++){
+        if(info[i].file_name){
+          numPhotos+=1
+        }
+        if(info[i].comments){
+          numComments+=info[i].comments.length
+        }
+        console.log(numPhotos,numComments)
+      }
+      returnObj.numComments=numComments
+      returnObj.numPhotos=numPhotos
+      res.status(200).send(JSON.stringify(returnObj));  
+    }
+  })
+
+})
+
 /*
  * URL /photosOfUser/:id - Return the Photos for User (id)
  */
-
 app.get('/photosOfUser/:id', function (request, response) {
     var id = request.params.id;
     //console.log("photos param id:",id)
