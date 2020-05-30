@@ -3,7 +3,7 @@ import {
   Typography,Link
 } from '@material-ui/core';
 import './userDetail.css';
-import fetchModel from '../../lib/fetchModelData'
+//import fetchModel from '../../lib/fetchModelData'
 import Axios from 'axios';
 
 //import { forOfStatement, thisTypeAnnotation } from '@babel/types';
@@ -35,7 +35,8 @@ class UserDetail extends React.Component {
   }
   
   componentDidMount(){
-    //console.log("UserDetail componentDidMount prevProps:",this.state.prevProps)
+    console.log("UserDetail componentDidMount prevProps:",this.state.prevProps)
+    console.log("UserDetail componentDidMount props:",this.state.props)
     
   }
 

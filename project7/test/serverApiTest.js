@@ -86,7 +86,7 @@ describe('CS142 Photo App API - ', function () {
             done();
         });
     });
-
+    
     describe('test /user/list', function (done) {
         var userList;
         var cs142Users = cs142models.userListModel();
@@ -277,7 +277,7 @@ describe('CS142 Photo App API - ', function () {
                         photos = JSON.parse(responseBody);
 
                         var real_photos = cs142models.photoOfUserModel(realUser._id);
-
+                        
                         assert.strictEqual(real_photos.length, photos.length, 'wrong number of photos returned');
                         _.forEach(real_photos, function (real_photo) {
                             var matches = _.filter(photos, {file_name: real_photo.file_name});
@@ -293,7 +293,7 @@ describe('CS142 Photo App API - ', function () {
                             assert.strictEqual(photo.user_id, id);
                             assertEqualDates(photo.date_time, real_photo.date_time);
                             assert.strictEqual(photo.file_name, real_photo.file_name);
-
+                            console.log("real_photo.comments:",real_photo.comments," to:",photo.comments)
                             if (real_photo.comments) {
                                 assert.strictEqual(photo.comments.length, real_photo.comments.length,
                                     'comments on photo ' + real_photo.file_name);
@@ -311,6 +311,7 @@ describe('CS142 Photo App API - ', function () {
                                     assert.strictEqual(comment.user.last_name, real_comment.user.last_name);
                                 });
                             } else {
+                                console.log("no realphoto comments what are photo comments?:",photo.comments)
                                 assert(!photo.comments || (photo.comments.length === 0));
                             }
 
@@ -343,6 +344,6 @@ describe('CS142 Photo App API - ', function () {
         });
 
     });
-
+    
 
 });
