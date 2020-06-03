@@ -29,7 +29,7 @@ class PhotoShare extends React.Component {
       photoInfo:'',
       engage:'',
       logged_in:'',
-      isLoggedIn:''
+      isLoggedIn:'',
     }
   }
 
@@ -79,18 +79,12 @@ class PhotoShare extends React.Component {
   }
 
   componentDidMount(){
-    //console.log("photoshare ComponentDidMount prevProps:",this.state.prevProps)
-    //console.log("photoshare ComponentDidMount this.state:",this.state)
-    //console.log("photoshare ComponentDidMount this.props:",this.props)
   }
   
+  //we need isLoggedIn as a statevar bc. logged_in is undefined
+  //prevLogin is past state for isLoggedIn to stop infinite loop in componentDidUpdate
   componentDidUpdate(){
-        
-    if(this.state.isLoggedIn!==undefined && this.state.prevLogin!==this.state.isLoggedIn){
-      //console.log("PHOTOSHARE logged in componentDidUpdate logged_in===undef aAND prevLogin!==isLoggedIn:",this.state.logged_in)
-      //console.log("after test PHOTOSHARE scomponentDidUpdate this.state:",this.state)
-      //console.log("after test PHOTOSHARE componentDidUpdate this.state.prevProps:",this.state.prevProps)
-      
+    if(this.state.isLoggedIn!==undefined && this.state.prevLogin!==this.state.isLoggedIn){      
       this.setState({prevProps:this.props,prevLogin:true})
       
       //console.log('photoShare axios get /user/list')
@@ -107,15 +101,11 @@ class PhotoShare extends React.Component {
     })
     .catch(error=>console.log(error))
     }
-    //this.redirectMe()
-    //should reset the state and let react rerender. 
   }
   
   redirectMe(){
     //console.log("PHOTOSHARE redirctME")
     if( this.state.logged_in) {
-      //console.log("redirectMe photoshare this.state.logged_in:",this.state.logged_in)
-      //console.log("redirectMe photoshare this.state.current_userId:",this.state.current_userId)
       return <div><Redirect to = {`/users/${this.state.current_userId}`} /></div>
     } 
     return <div><Redirect path="/users/:id" to="/login-register" /></div>
@@ -150,8 +140,6 @@ class PhotoShare extends React.Component {
     }
     
   }
-//onLogOut={this.logOut}
-//{selectedUserName:this.state.current_userName,selectedUserID:this.state.current_userId}
   render() {
     return (
       <HashRouter>
