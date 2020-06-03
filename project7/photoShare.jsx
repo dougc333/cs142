@@ -7,7 +7,6 @@ import {
   Grid, Paper
 } from '@material-ui/core';
 import './styles/main.css';
-import fetchModel from './lib/fetchModelData'
 import TopBar from './components/topBar/TopBar';
 import UserDetail from './components/userDetail/UserDetail';
 import UserList from './components/userList/UserList';
@@ -41,9 +40,9 @@ class PhotoShare extends React.Component {
   }
   //logout passed to topbar component
   setLogout=(c)=>{
-    console.log("photoshare logout, c:",c)
-    if(c===false){
-      this.setState({logged_in:''}) //set back to undefined 
+    console.log("*******photoshare logout, c:",c)
+    if(c===undefined){
+      this.setState({logged_in:'',isLoggedIn:'',prevLogin:''}) //set back to undefined 
     }
   }
 
@@ -54,9 +53,9 @@ class PhotoShare extends React.Component {
   }
 
   //passed to userphotos
-  photosMount=(setPhotos)=>{
-    //console.log("******photosMount:",setPhotos)
-    this.setState({photoInfo:setPhotos})
+  photosMount=(numPhotos)=>{
+    console.log("******PhothoShare photosMount:",numPhotos)
+    this.setState({photoInfo:numPhotos})
   }
   //passed to Userlist, click on UserList element executes and returns newUserId 
   set_CurrentUserID = (newUserId) => {
@@ -82,10 +81,7 @@ class PhotoShare extends React.Component {
   componentDidMount(){
     console.log("photoshare ComponentDidMount prevProps:",this.state.prevProps)
     console.log("photoshare ComponentDidMount this.state:",this.state)
-    console.log("photoshare ComponentDidMount this.props:",this.props)
-    //if logged in do this
-    //move to componentDidUpdate 
-    //this.setState({prevProps.logged_in:this.props})
+    //console.log("photoshare ComponentDidMount this.props:",this.props)
   }
   
   componentDidUpdate(){
@@ -94,16 +90,13 @@ class PhotoShare extends React.Component {
     console.log("photoshare componentDidUpdate this.prevProps:",this.state.prevProps)
     console.log("photoshare componentDidUpdate this.state.prevLogin:",this.state.prevLogin)
     console.log("photoshare componentDidUpdate this.state.isLoggedIn:",this.state.isLoggedIn)
-    
-    //console.log("photoshare componentDidUpdate this.prevProps.logged_in:",this.prevProps.logged_in)
-    
+        
     if(this.state.isLoggedIn!==undefined && this.state.prevLogin!==this.state.isLoggedIn){
-      console.log("after test photoshare componentDidUpdate this.state:",this.state)
-      console.log("after test photoshare componentDidUpdate this.state.prevProps:",this.state.prevProps)
+      console.log("PHOTOSHARE logged in componentDidUpdate logged_in===undef aAND prevLogin!==isLoggedIn:",this.state.logged_in)
+      console.log("after test PHOTOSHARE scomponentDidUpdate this.state:",this.state)
+      console.log("after test PHOTOSHARE componentDidUpdate this.state.prevProps:",this.state.prevProps)
       
       this.setState({prevProps:this.props,prevLogin:true})
-      console.log("logged in photoshare componentDidUpdate this.state.logged_in:",this.state.logged_in)
-      console.log("logged in photoshare componentDidUpdate this.state:",this.state)
       
       console.log('photoShare axios get /user/list')
       axios.get('http://localhost:3000/user/list')
@@ -111,9 +104,8 @@ class PhotoShare extends React.Component {
       console.log("PHOTOSHARE then data",response.data); 
       this.setState({fetchData:response.data}
       ,function(){
-      console.log("PHOTOSHARE compnentDidUpdate after setState this.state.fetchData:",this.state.fetchData);
+      //console.log("PHOTOSHARE compnentDidUpdate after setState this.state.fetchData:",this.state.fetchData);
       console.log("PHOTOSHARE compnentDidUpdate after setState this.state:",this.state);
-      
       console.log("PHOTOSHARE this.state.fetchData valid!!!!");
       }
       )
@@ -123,66 +115,69 @@ class PhotoShare extends React.Component {
     //this.redirectMe()
     //should reset the state and let react rerender. 
   }
-
+  
   redirectMe(){
-    //replace w/if logged in this.state.current_userId.length>1
-    //change the redirect to componentDidUpdate?
-    if(this.state.logged_in){
-    console.log("redirectMe photoshare this.state.logged_in.length:",this.state.logged_in)
-    console.log("redirectMe photoshare this.state.current_userId:",this.state.current_userId)
+    console.log("PHOTOSHARE redirctME")
     if( this.state.logged_in) {
+      console.log("redirectMe photoshare this.state.logged_in:",this.state.logged_in)
+      console.log("redirectMe photoshare this.state.current_userId:",this.state.current_userId)
       return <div><Redirect to = {`/users/${this.state.current_userId}`} /></div>
     } 
-  }
+    return <div><Redirect path="/users/:id" to="/login-register" /></div>
   }
 
-  add(){
-    //if we do test here is data valid at userlist for display?
-    //if logged in and fetchData.length >1
-    //if (this.state.fetch){
-      //console.log("ADD**** this.state.fetchData:",this.state.fetchData)
-      return (
-        <div>
+  addUserList(){
+    if(this.state.isLoggedIn && this.state.logged_in){
+     return (
+      <div>
       <UserList userIdArr={this.state.fetchData} onNewUserID={this.set_CurrentUserID } isEngage={this.state.engage} isLoggedIn={this.state.isLoggedIn} photoShareLoginState={this.state.logged_in} />
       </div>
-      )
-    //}
+     )
+    }
   }
 
   appendPhotos(){
     if(!this.state.engage){
       return (<Route path="/photos/:userId"
-      render ={ props => <UserPhotos didMount={this.photosMount} {...props} /> }
+      render ={ props => <UserPhotos {...props} userLoginInfo={this.state.logged_in}/> }
       />)
     }else{
       return (<Route path="/photos/:userId/"
-        render ={ props => <SinglePhoto didMount={this.photosMount} {...props} /> }
+        render ={ props => <SinglePhoto  {...props} userLoginInfo={this.state.logged_in}/> }
       />)
     }
   }
+  addLoginElement(){
+    console.log("PHOTOSHARE addLoginElement, this.state.logged_in:",this.state.logged_in, "this.state.isLoggedIn:",this.state.isLoggedIn)
+    if(!this.state.logged_in ){
+      console.log('PHOTOSHARE adding LOGINREGISTER component!!!')
+      return  <div> <LoginRegister loginState = {this.setLogin}/></div>
+    }
+    
+  }
 //onLogOut={this.logOut}
+//{selectedUserName:this.state.current_userName,selectedUserID:this.state.current_userId}
   render() {
     return (
-      
       <HashRouter>
       <div>
       <div>sdfsdfsd</div>
       <Grid container spacing={8}>
         <Grid item xs={12}>
-          <TopBar usrid={this.state.current_userName} photoInfo={this.state.photoInfo} onCheckBox={this.setEngage} loginInfo={this.state.logged_in} onLogOut={this.setLogout} />
+          <TopBar usr_name={this.state.current_userName} 
+          photoInfo={this.state.photoInfo} onCheckBox={this.setEngage} 
+          loginInfo={this.state.logged_in} onLogOut={this.setLogout} photoStatus={this.photosMount}/>
         </Grid>
         <div className="cs142-main-topbar-buffer"/>
         <Grid item sm={3}>
           <Paper  className="cs142-main-grid-item">
-            {this.add()}
+            {this.addUserList()}
             {this.redirectMe()}
-            fffffff
           </Paper>
         </Grid>
         <Grid item sm={9}>
-         <LoginRegister loginState = {this.setLogin}/>
+          {this.addLoginElement()}
           <Paper className="cs142-main-grid-item">
-          vvvvvvv
             <Switch>
               <Route path="/users/:userId"
                 render={ props => <UserDetail  {...props} /> }

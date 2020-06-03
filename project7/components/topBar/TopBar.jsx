@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-  AppBar, Toolbar, Typography,Checkbox,Button, TextField
+  AppBar, Toolbar, Typography,Checkbox,Button
 } from '@material-ui/core';
 import './TopBar.css';
+import axios from 'axios'
 
 /**
  * Define TopBar, a React componment of CS142 project #5
@@ -16,6 +17,10 @@ class TopBar extends React.Component {
       old:'',
       checked:false,
       login_info:'',
+      addPhoto:true,
+      userId:'', //do I need this? this.props.usrid is userName for display, can we use this object?
+      logged_out:false,
+      numPhoto:0,
     }
   }
 
@@ -39,14 +44,14 @@ class TopBar extends React.Component {
     }
     if(this.state.login_info!==this.props.loginInfo){
       console.log("topbar componentDidUpdate login_info setState login_name!!!!!")
-      this.setState({login_info:this.props.loginInfo})
+      this.setState({login_info:this.props.loginInfo,logged_out:false})
       //this.displayLogin()
     }else{
       //console.log("topbar componentDidUpdate no login update")
     }
   }
 
-  handleChange=(e)=>{
+  handleChange=()=>{
     //console.log("topbar handleChange e.currentTarget.value",e.currentTarget.value)
     //console.log("handleChange topbar checked before setState:",this.state.checked)
     //console.log("topbar handleChange event.currentTarget.getAttribute('value')",event.currentTarget.getAttribute('value'))
@@ -67,38 +72,84 @@ class TopBar extends React.Component {
     }else if(this.state.login_name===''){
       {console.log("b")}
       return(
+        <div>
       <Typography variant="h5" color="inherit" component='span' style={{ flex: 1 }}>
          Please Login: {this.state.login_info.login_name} 
       </Typography>
+      <Button><span className='logout-button-style' >Logout</span></Button>
+      </div>
       )
     }
   }
   
   //need function from parent, photoshare
-  handleButton=(e)=>{
-    console.log("topbar logout!!!!!! this.state:",this.state)
+  //remove this.setState logged_out.
+  handleLogout=()=>{
+    console.log("********topbar logout!!!!!! this.state:",this.state)
     this.props.onLogOut()
-    //this.props.onLogOut(false)
+    this.setState({logged_out:true})
   }
 
-//<Button  onClick={this.handleButton} ></Button>
+  clickPhotoButton=()=>{
+    console.log("topbar clickPhotoButton this.state:",this.state)
+    this.setState({addPhoto:!this.state.addPhoto,numPhoto:this.state.numPhoto+1})
+    this.props.photoStatus(this.state.numPhoto)
+  }
+ 
+  handleUploadButtonClicked = (e) => {
+    e.preventDefault();
+    console.log("TobBar handleUploadButtonClicked e:",e)
+    console.log("TobBar handleUploadButtonClicked this.uploadInput:",this.uploadInput)
+    
+    if (this.uploadInput.files.length > 0) {
+     // Create a DOM form and add the file to it under the name uploadedphoto
+     console.log(this.uploadInput.files)
+     const domForm = new FormData();
+     domForm.append('uploadedphoto', this.uploadInput.files[0]);
+     axios.post('http://localhost:3000/photos/new', domForm)
+       .then((res) => {
+         console.log(res);
+       })
+       .catch(err => console.log(`POST ERR: ${err}`));
+   }
+   this.setState({addPhoto:!this.state.addPhoto})
+  }
+  
+  displayAddPhoto(){
+    console.log("*****diaplayAddPhoto:",this.state.addPhoto)
+    if(this.state.addPhoto===true){
+      return(
+        <Button onClick={this.clickPhotoButton}><span className="logout-button-style">Add Photo</span></Button>
+      );   
+    }else{
+      return(
+        <div>
+        <input type="file" accept="image/*" ref={(domFileRef) => { this.uploadInput = domFileRef; }} />
+        <Button  onClick={this.handleUploadButtonClicked}><span className="logout-button-style"> Upload File</span></Button>
+        </div>
+      );
+    }
+  }
+
   render() {
+    
     return (
       <AppBar className="cs142-topbar-appBar" position="absolute" >
         <Toolbar>
           <Typography variant="h5" color="inherit" component='span' style={{ flex: 1 }}>
           Name:DC
-          </Typography>
+          </Typography> 
           {this.displayLogin()}
+          {this.displayAddPhoto()}
           Engage
           <Checkbox
             onChange={this.handleChange}
             value="checkedA"
             inputProps={{ 'aria-label': 'Checkbox A' }}
           />
-          <Button onClick={this.handleButton}><span className="logout-button-style">Logout</span></Button>
+          <Button onClick={this.handleLogout}><span className="logout-button-style">Logout</span></Button>
           <Typography variant="h5" color="inherit" component='span' style={{ flex: 1 }}>
-          User {this.state.name} :{this.props.usrid}
+          User {this.state.name} :{this.props.usr_name}
           </Typography>
         </Toolbar>
         

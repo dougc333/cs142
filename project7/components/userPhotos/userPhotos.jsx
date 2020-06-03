@@ -3,9 +3,9 @@ import {
   Typography,Link
 } from '@material-ui/core';
 import './userPhotos.css';
-//import { cloneNode } from '@babel/types';
-import fetchModel from '../../lib/fetchModelData'
 import Axios from 'axios'
+import PopUP from './popUP'
+
 /**
  * Define UserPhotos, a React componment of CS142 project #5
  */
@@ -17,12 +17,16 @@ class UserPhotos extends React.Component {
       photos: '',
       userId: this.props.match.params.userId,
       prevProps:props,
+      login_info:''
     }
   }
-
+  
   componentDidMount(){
-    //console.log("UserPhotos componentDidMount props:",this.state.prevProps)
-    this.handlePhotos(true)
+    console.log("UserPhotos componentDidMount this.state.prevProps:",this.state.prevProps)
+    console.log("UserPhotos componentDidMount this.props:",this.props)
+    console.log("UserPhotos componentDidMount this.state:",this.state)
+    console.log("UserPhotos componentDidMount this.props.userLoginInfo!!!!!!!!:",this.props.userLoginInfo)
+    this.setState({login_info:this.props.userLoginInfo})
     //console.log("UserPhotos componentDidMount userId:",this.props.match.params.userId)
     //console.log("UserPhotos componentDidMount photos:",this.state.photos)
     Axios.get(`http://localhost:3000/photosOfUser/${this.props.match.params.userId}`)
@@ -36,9 +40,6 @@ class UserPhotos extends React.Component {
     .catch(error=>console.log(error))
   }
 
-  handlePhotos=(t)=>{
-    this.props.didMount(t)
-  }
   componentDidUpdate(){
     //console.log("UserPhotos componentDidUpdate userId:",this.props.match.params.userId)
     if (this.state.userId !== this.props.match.params.userId){
@@ -55,28 +56,33 @@ class UserPhotos extends React.Component {
   }
   componentWillUnmount(){
     //console.log('UserPhotos unmount')
-    this.handlePhotos(false)
+    //this.handlePhotos(false)
   }
 
   addPhotos(){
     let userPhotos=[]
-    //console.log("addPhotos")
-    //console.log("addPhotos userId:",this.props.match.params.userId)
-    //console.log("addPhotos this.state.photos:",this.state.photos)
-    
+    console.log("addPhotos")
+    console.log("addPhotos userId:",this.props.match.params.userId)
+    console.log("addPhotos this.state.photos:",this.state.photos)
+    console.log("addPhotos this.state:",this.state)
+
     for (let i=0;i<(this.state.photos.length);i++){
-      //console.log("addPhotos:",this.state.photos[i]) 
+      console.log("USER PHOTOS addPhotos:",this.state.photos[i]) 
       userPhotos.push(
         <img className='img-style'
-          key={this.state.photos[i]._id} 
+          key={this.state.photos[i].file_name} 
           src={ '/images/'+this.state.photos[i].file_name} 
         />
         )
       userPhotos.push(
-        <div key={this.state.photos[i].date_time}>
+        <div key={this.state.photos[i]._id}>
+        <Typography color="primary">id:{" "+this.state.photos[i]._id}</Typography>
+         <div key={this.state.photos[i].date_time}>
          <Typography color="primary">Time:{" "+this.state.photos[i].date_time}</Typography>
-                <div key={this.state.photos[i].file_name}>
+          <div key={this.state.photos[i].file_name}>
           <Typography color="primary">FileName:{" "+this.state.photos[i].file_name}</Typography>
+        </div>
+        <PopUP value='this.state.photos[i]._id' photoID={this.state.photos[i]._id} />
         </div>
         </div>
 
@@ -101,7 +107,8 @@ class UserPhotos extends React.Component {
                 </div>
             </Typography>  
           )
-        }
+        }//end for
+        userPhotos.push(<div key={Math.random()} id={this.state.photos[i]._id}>adding here</div>)
       }//end comments 
     }
     return userPhotos  

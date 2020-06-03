@@ -18,7 +18,9 @@ class UserDetail extends React.Component {
     this.state={
       usrid:this.props.match.params.userId,
       fetch_usrdet:'',
-      prevProps:props
+      prevProps:props,
+      popUp:false,
+      addComment:''
     }     
     //console.log("UserDetail componentDidMount prevProps:",this.state.prevProps)
     //console.log("UserDetail componentDidMount this.state.match.userId:",this.props.match.params.userId)
@@ -34,6 +36,13 @@ class UserDetail extends React.Component {
     .catch(error=>console.log(error))
   }
   
+  handleComment=(c)=>{
+    console.log("UserDetail handleCOmment:",c)
+    this.setState({addComment:c},function(){
+      console.log("UserDetail handleComment setState completed:",this.state)
+    })
+  }
+
   componentDidMount(){
     console.log("UserDetail componentDidMount prevProps:",this.state.prevProps)
     console.log("UserDetail componentDidMount props:",this.state.props)
@@ -79,16 +88,22 @@ class UserDetail extends React.Component {
     )
     
   }
+  handleClick=(e)=>{
+    console.log("UserDetail handleClick e:",e)
+    console.log("UserDetail handleClick this.state:",this.state)
+    this.setState({popUp:!this.state.popUp})
+    //popUp
+  }
 
   render() {
     return (
       <div id="ud">
-      {this.appendMe()}
-      <Typography variant="body1">
-      {this.appendLink()}
-      </Typography>
+        {this.appendMe()}
+        <Typography variant="body1">
+        {this.appendLink()}
+        </Typography>
       </div>
-    );
+    ); //end return
   }
 }
 

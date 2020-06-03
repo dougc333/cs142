@@ -229,7 +229,6 @@ app.post('/photos/new',function(request,response){
     console.log(" not undefined /photos/new request.session:",request.session) 
     console.log(" /photos/new request.session.login_name:",request.session.login_name)   
   }
-  console.log("in /photos/new")
   processFormBody(request, response, function (err) {
     if (err || !request.file) {
       // XXX -  Insert error handling code here.
@@ -237,6 +236,7 @@ app.post('/photos/new',function(request,response){
       response.status(400).send("User not found");
       return;
     }
+    console.log()
     // request.file has the following properties of interest
     //      fieldname      - Should be 'uploadedphoto' since that is what we sent
     //      originalname:  - The name of the file the user uploaded
@@ -249,18 +249,24 @@ app.post('/photos/new',function(request,response){
     // the original file name unique by adding a unique prefix with a timestamp.
     var timestamp = new Date().valueOf();
     var filename = 'U' +  String(timestamp) + request.file.originalname;
-
+    console.log("/photos/new filename:",filename, "timestamp:",timestamp)
     fs.writeFile("./images/" + filename, request.file.buffer, function (err) {
       // XXX - Once you have the file written into your images directory under the name
       // filename you can create the Photo object in the database
-      console.log("create photoObj filename:",filename)
-      
+      if(err){
+        console.log('/photos/new fs.writeFile err:',err)
+        response.status(400).send("fs writeFile error");
+        return
+      }
+      console.log(" fs writeFile completed:")
     });
+
     let photoObj={
       'file_name':filename,
       'user_id':request.session.userId,
       'comments':[]
     }
+    console.log("/photos/new createinf photoObj:",photoObj)
     Photo.create(photoObj,function(err,info){
       if(err){
         console.log("/photos/new database create error")
@@ -274,22 +280,24 @@ app.post('/photos/new',function(request,response){
 })
 
 app.post('/commentsOfPhoto/:photoId',function(request,response){
-  console.log(' In /commentsOfPhoto/:photoId')
+  let pId = request.params.photoId;
+  console.log(' In /commentsOfPhoto/:photoId photoID:',request.params.photoId)
   if (request.session.login_name===undefined){
     console.log("undefined /commentsOfPhoto/:photoId request.session:",request.session)
+    console.log("/commentsOfPhoto/photoID user not logged in")
     response.status(401).send('User not logged in');
     return
   }else{
     console.log(" not undefined /commentsOfPhoto/:photoId request.session:",request.session) 
     console.log(" /commentsOfPhoto/:photoId request.session.login_name:",request.session.login_name)   
   }
-  let photoId = request.params.photoId;
+  
   console.log("session userId:",request.session.userId)
-  console.log('commentsOfPhoto/photoId',photoId)
+  console.log('commentsOfPhoto/photoId',pId)
   //console.log("commentsofPhto request:",request)
   console.log("comment request.body:",request.body)
   console.log("comment TO BE ADDED request.body.comment:",request.body.comment)
-  Photo.findOne({'_id':photoId},function(err,info){
+  Photo.findOne({'_id':pId},function(err,info){
     if(err){
       console.log("commentsOfPhoto/photoId error 500")
       response.status(400).send(JSON.stringify(err));
@@ -410,7 +418,7 @@ app.get('/user/:id', function (request, response) {
     });    
 });
 
-app.get('/commentsOfUser/:id',function(req, res){
+app.get('/commentsOfUser/:id',function(request, response){
   console.log(' In /commentsOfUser/:id')
   if (request.session.login_name===undefined){
     //console.log("/photos/new: request.session:",request.session)
@@ -419,9 +427,9 @@ app.get('/commentsOfUser/:id',function(req, res){
   }else{
     console.log(" not undefined /photos/new: request.session:",request.session)    
   }
-  var id = req.params.id
+  var id = request.params.id
   if(id===null || id.length!==24){
-    res.status(400).send("Not found")
+    response.status(400).send("Not found")
     return
   }
   
@@ -443,7 +451,7 @@ app.get('/commentsOfUser/:id',function(req, res){
       }
       returnObj.numComments=numComments
       returnObj.numPhotos=numPhotos
-      res.status(200).send(JSON.stringify(returnObj));  
+      response.status(200).send(JSON.stringify(returnObj));  
     }
   })
 
@@ -483,7 +491,7 @@ app.get('/photosOfUser/:id', function (request, response) {
                 "first_name":info[i].first_name, 
                 "last_name":info[i].last_name})
           //console.log("user info length in loop:",user_info.length)
-          };
+          }
           console.log("in iife",user_info.length)
           Photo.find({'user_id':id},function(err,info){
             console.log("user info in photo.find:",user_info)

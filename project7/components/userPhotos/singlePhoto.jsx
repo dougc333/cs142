@@ -1,13 +1,11 @@
 import React from 'react';
 import {
-  BrowserRouter, Route, Switch
+  Route, Switch
 } from 'react-router-dom';
 import {
   Typography,Button
 } from '@material-ui/core';
 import './userPhotos.css';
-//import { cloneNode } from '@babel/types';
-import fetchModel from '../../lib/fetchModelData'
 import Axios from 'axios';
 
 /**

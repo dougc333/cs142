@@ -11,3 +11,12 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.app{
+  color:green;
+}
+.button-style{
+  height:10px;
+  width:100px;
+  color:blue;
+}

@@ -10,7 +10,8 @@ import './userList.css';
 import CommentIcon from '@material-ui/icons/Comment';
 import PhotoIcon from '@material-ui/icons/Photo';
 import Axios from 'axios'
-var async = require('async');
+
+
 /**
  * Define UserList, a React componment of CS142 project #5
  */
@@ -51,8 +52,6 @@ class UserList extends React.Component {
     let fm = this.state.prevProps.userIdArr
     let en = this.props.isEngage
     console.log("UserList componentDidMount this.state before init:",this.state)
-    //why set state here? it means this.props is never undefined. We dont have to do this
-    //intead you can test for this.props!==undefined
     this.setState({userId:fm,engage:en,areYouLoggedIn:this.props.isLoggedIn,logged_in:this.props.photoShareLoginState},
       function(){console.log("UserList componentDidMount after setState:",this.state)
     })
@@ -92,7 +91,23 @@ class UserList extends React.Component {
         console.log('UserList componentDidUpdate setLogin and web request!!!!!!!!!!! this.state.areYouLoggedIn:',this.state.areYouLoggedIn)
         console.log('UserList componentDidUpdate setLogin and web request!!!!!!!!!!! this.props.userIdArr:',this.props.userIdArr)
         console.log('UserList componentDidUpdate setLogin and web request!!!!!!!!!!! this.state.userId:',this.state.userId)
-        this.setState({areYouLoggedIn:this.props.isLoggedIn})
+        let arr=[]
+        for (let i=0;i<this.state.prevProps.userIdArr.length;i++){
+          console.log("UserList componentDidUpdate setLogin and web request!!!!!!!!!!! componentDidMount id:",this.state.prevProps.userIdArr[i]._id)
+          Axios.get(`http://localhost:3000/commentsOfUser/${this.state.prevProps.userIdArr[i]._id}`).then(data=>{
+          console.log("componentDidMount data:",data)
+           let obj ={
+            'id':this.state.prevProps.userIdArr[i]._id,
+            'numComments':data.data.numPhotos,
+            'numPhotos': data.data.numComments
+           }
+           arr.push(obj)
+          }) //end then
+          .catch(error=>console.log(error))
+        }//end for
+        console.log("componentDidMount arr:", arr)
+        this.setState({commentPhoto:arr,areYouLoggedIn:this.props.isLoggedIn})
+
       }
       if(this.props && this.props.userIdArr.length>1 && this.props.userIdArr!==this.state.userId){
         console.log("UserList componentDidUpdate userIDArr valid and setState to this.state.userId!!!!!")
@@ -100,31 +115,6 @@ class UserList extends React.Component {
           console.log("UserList componentDidUpdate this.state.userId after setState!!!!!!!",this.state)
         })
       }
-   
-      if(this.state.prevProps!==undefined && this.state.prevProps.userIdArr!==undefined){
-        console.log('UserList compondntDidMount setUserIdAddr!!!!!!!!!!! len:',this.state.prevProps.userIdArr.length)
-        let arr=[]
-        for (let i=0;i<this.state.prevProps.userIdArr.length;i++){
-          console.log("userList componentDidMount id:",this.state.prevProps.userIdArr[i]._id)
-          Axios.get(`http://localhost:3000/commentsOfUser/${this.state.prevProps.userIdArr[i]._id}`).then(data=>{
-            //console.log("componentDidMount data:",data)
-            let obj ={
-              'id':this.state.prevProps.userIdArr[i]._id,
-              'numComments':data.data.numPhotos,
-              'numPhotos': data.data.numComments
-            }
-            arr.push(obj)
-          }) //end then
-          .catch(error=>console.log(error))
-          console.log("Userlist ComponentDudUpdate 2 problems")
-          console.log("this.state.prevProps.userIdArr never set:",this.state.prevProps.userIdArr)
-          console.log('never did anything with arr:',arr)
-          console.log("UserList componentDidUpdate arr:", arr)
-          this.setState({commentPhoto:arr})
-        }//end for
-      }
-        
-
     }
   }
 
