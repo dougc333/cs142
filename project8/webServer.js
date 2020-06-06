@@ -457,9 +457,95 @@ app.get('/commentsOfUser/:id',function(request, response){
 
 })
 
+app.get('/photosOfUser/:id', function (request, response) {
+  console.log('In /photosOfUser/:id')
+  if (request.session.login_name===undefined){
+    console.log("undefined login name reutrning 401 /photosOfUser/:id:  request.session:",request.session," id:",request.params.id)
+    response.status(401).send('User not logged in');
+    return
+  }else{
+    console.log(" not undefined /photosOfUser/:id request.session:",request.session)    
+  }
+  var id = request.params.id;
+  console.log("photos param id:",id)
+  if (id === null || id.length!==24) {
+    console.log('User with _id:' + id + ' not found. sending back 400');
+    response.status(400).send('Not found');
+    return;
+  }
+  
+  User.find({},function(err,userInfo){
+    if(err){
+      console.log("User find err:",err)
+      response.status(400).send('User find error');
+      return
+    }
+    var userInfo=JSON.parse(JSON.stringify(userInfo))
+    console.log("userInfo:",userInfo)
+    Photo.find({'user_id':id},function(err,photoInfo){
+      if(err){
+        console.log("User find err:",err)
+        response.status(400).send('User find error');
+        //callback(err)
+        return
+      }
+      var photoInfo = JSON.parse(JSON.stringify(photoInfo))
+      console.log("photoInfo:",photoInfo)
+      var photoArr=[]
+      async.each(photoInfo,function(x,callback){
+        console.log("photoInfo async each:",x)
+        let commentArr = []
+        let photoObj ={
+          '_id':x._id,
+          'date_time':x.date_time,
+          'file_name':x.file_name,
+          'user_id':x.user_id,
+          'comments':commentArr
+        }
+        photoArr.push(photoObj)
+        async.each(x.comments,function(y,callback){
+          if(err){
+            console.log("err",err)
+            response.status(400).send('Photo find error');
+            return
+          }
+          console.log("comment:",y.comment)
+          console.log("date_time:",y.date_time)
+          console.log("user_id:",y.user_id)
+          console.log("y._id:",y._id)
+          //console.log("x._id",x._id)
+          console.log("typeof(y._id):",typeof(y._id))
+          console.log("typeof(x._id):",typeof(x._id))
+          console.log("len userInfo:",userInfo.length)
+          //console.log('userInfo find:',z);
+          let res = userInfo.find(z=>z._id===y.user_id)
+          console.log("res:",res)
+          let userObj={
+            '_id':res._id,
+            'first_name':res.first_name,
+            'last_name':res.last_name,
+          }
+          let commentObj={
+            '_id':y._id,
+            'date_time':y.date_time,
+            'comment':y.comment,
+            'user':userObj,
+          }
+          photoObj.comments.push(commentObj)
+        }).catch("err photo comment async each")
+        //callback(10)
+      }).catch("err photoinfo async each")
+      response.status(200).send(photoArr); 
+    })
+  })
+  //photoArr=[]
+  
+})//end app.get
+
+
 /*
  * URL /photosOfUser/:id - Return the Photos for User (id)
- */
+ 
 app.get('/photosOfUser/:id', function (request, response) {
   console.log('In /photosOfUser/:id')
   if (request.session.login_name===undefined){
@@ -574,7 +660,7 @@ app.get('/photosOfUser/:id', function (request, response) {
 }) 
     
 }); 
-
+*/
 
 var server = app.listen(3000, function () {
     var port = server.address().port;

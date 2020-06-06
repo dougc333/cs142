@@ -196,7 +196,7 @@ describe('CS142 Photo App API - ', function () {
                         assert.strictEqual(extraProps.length, 0, 'user object has extra properties: ' + extraProps);
                         callback();
                     });
-                });
+                }); //end http get
             }, done);
         });
 
@@ -277,12 +277,20 @@ describe('CS142 Photo App API - ', function () {
                         photos = JSON.parse(responseBody);
 
                         var real_photos = cs142models.photoOfUserModel(realUser._id);
-                        
+                        console.log("real_photos:",real_photos)
+                        console.log("photos:",photos)
+                        console.log("real_photos.length, photos.length:",real_photos.length, photos.length)    
+                        console.log("real_photos.comments:",real_photos.comments)
+                        console.log("photos.comments:",photos.comments)
                         assert.strictEqual(real_photos.length, photos.length, 'wrong number of photos returned');
                         _.forEach(real_photos, function (real_photo) {
                             var matches = _.filter(photos, {file_name: real_photo.file_name});
                             assert.strictEqual(matches.length, 1, ' looking for photo ' +
                                 real_photo.file_name);
+                            console.log("&&&&&^^& for each in real_photos iterate real_photo:",real_photo.first_name)
+                            //console.log("looking for real_photo:",real_photo.file_name)
+                            //console.log("looking for real_photo:",real_photo.file_name)
+                            
                             var photo = matches[0];
                             var photoProps = photoProperties;
                             if (true) {
@@ -293,11 +301,11 @@ describe('CS142 Photo App API - ', function () {
                             assert.strictEqual(photo.user_id, id);
                             assertEqualDates(photo.date_time, real_photo.date_time);
                             assert.strictEqual(photo.file_name, real_photo.file_name);
-                            console.log("real_photo.comments:",real_photo.comments," to:",photo.comments)
+                            
                             if (real_photo.comments) {
                                 assert.strictEqual(photo.comments.length, real_photo.comments.length,
                                     'comments on photo ' + real_photo.file_name);
-
+                                console.log("###### real_photo.comments:",real_photo.comments)
                                 _.forEach(real_photo.comments, function (real_comment) {
                                     var comment = _.find(photo.comments, {comment: real_comment.comment});
                                     assert(comment);
