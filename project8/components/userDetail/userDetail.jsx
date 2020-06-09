@@ -3,15 +3,9 @@ import {
   Typography,Link
 } from '@material-ui/core';
 import './userDetail.css';
-//import fetchModel from '../../lib/fetchModelData'
 import Axios from 'axios';
 
-//import { forOfStatement, thisTypeAnnotation } from '@babel/types';
 
-//window.cs142models.userModel(this.props.match.params.userId)
-/**
- * Define UserDetail, a React componment of CS142 project #5
- */
 class UserDetail extends React.Component {
   constructor(props) {
     super(props);
@@ -22,18 +16,6 @@ class UserDetail extends React.Component {
       popUp:false,
       addComment:''
     }     
-    //console.log("UserDetail componentDidMount prevProps:",this.state.prevProps)
-    //console.log("UserDetail componentDidMount this.state.match.userId:",this.props.match.params.userId)
-    //console.log("UserDetail componentDidMount this.state.fetch_userdet:",this.state.fetch_usrdet)
-    Axios.get(`http://localhost:3000/user/${this.props.match.params.userId}`)
-    .then(response=>{
-      //console.log("UserDetail then data",data); 
-       this.setState({fetch_usrdet:response.data}
-       //,function(){
-       //console.log("UserDetail fetch this.state.fetch_userdet:",this.state.fetch_usrdet)
-       //}
-      )})
-    .catch(error=>console.log(error))
   }
   
   handleComment=(c)=>{
@@ -46,6 +28,15 @@ class UserDetail extends React.Component {
   componentDidMount(){
     //console.log("UserDetail componentDidMount prevProps:",this.state.prevProps)
     //console.log("UserDetail componentDidMount props:",this.state.props)
+    Axios.get(`http://localhost:3000/user/${this.props.match.params.userId}`)
+    .then(response=>{
+      //console.log("UserDetail then data",data); 
+       this.setState({fetch_usrdet:response.data}
+       //,function(){
+       //console.log("UserDetail fetch this.state.fetch_userdet:",this.state.fetch_usrdet)
+       //}
+      )})
+    .catch(error=>console.log(error))
     
   }
 
@@ -87,12 +78,6 @@ class UserDetail extends React.Component {
       <Link className='photo-link' color="secondary" href={'http://localhost:3000/photo-share.html#/photos/'+this.props.match.params.userId}>Photos</Link>
     )
     
-  }
-  handleClick=(e)=>{
-    console.log("UserDetail handleClick e:",e)
-    console.log("UserDetail handleClick this.state:",this.state)
-    this.setState({popUp:!this.state.popUp})
-    //popUp
   }
 
   render() {

@@ -1,0 +1,21 @@
+for(let i=0;i<info.length;i++){
+      console.log("processing:",i,info[i])
+      for(let j=0;j<info[i].comments.length;j++){
+        console.log("processing comment:",info[i].comments[j])
+        //add user name, first_name, last_name from userId
+        console.log('processing comments looking for userID:',info[i].comments[j].user_id)
+        const res = globalUsers.find(x=>x._id===info[i].comments[j].user_id)
+        console.log(typeof(globalUsers[0]._id),typeof(info[i].comments[j].user_id))
+        console.log("res:",res)
+      }
+      let newPhotoObj={
+        '_id':info[i]._id,
+        'file_name':info[i].file_name,
+        'user_id':info[i].user_id,
+        'date_time':info[i].date_time,
+      }
+      returnPhotos.push(newPhotoObj)
+    }
+
+
+    

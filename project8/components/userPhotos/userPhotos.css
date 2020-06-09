@@ -5,3 +5,13 @@
 .user-color{
     color:blue;
 }
+.closeicon-style{
+  border:2px solid red;
+  
+}
+
+.img-container-style {
+    display:flex;
+    flex-direction: row;
+    border:2px solid orange;
+}

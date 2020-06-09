@@ -1,10 +1,11 @@
 import React from 'react';
 import {
-  Typography,Link,TextField
+  Typography,Link,TextField,Box,Grid
 } from '@material-ui/core';
 import './userPhotos.css';
 import Axios from 'axios'
 import PopUP from './popUP'
+import CloseIcon from '@material-ui/icons/Close';
 
 /**
  * Define UserPhotos, a React componment of CS142 project #5
@@ -51,6 +52,22 @@ class UserPhotos extends React.Component {
     //console.log('UserPhotos unmount')
     //this.handlePhotos(false)
   }
+  
+  
+  deleteComment=(e)=>{ 
+    console.log("userPhotos deletComment e:",e)
+    console.log("should see commentID!!!!!",e.currentTarget.outerHTML)
+    console.log("should see commentID!!!!!",e.currentTarget.getAttribute("value")) 
+    console.log("type:",typeof(e.currentTarget.getAttribute("value")))
+    Axios.get(`http://localhost:3000/deleteComment/${e.currentTarget.getAttribute("value")}`)
+    .then(response=>{
+      console.log("deleteComment response:",response)
+    })
+    .catch(error=>console.log("deleteComment http get error",error))
+    
+  }
+
+
 
   addPhotos(){
     let userPhotos=[]
@@ -62,10 +79,17 @@ class UserPhotos extends React.Component {
     for (let i=0;i<(this.state.photos.length);i++){
       //console.log("USER PHOTOS addPhotos:",this.state.photos[i]) 
       userPhotos.push(
-        <img className='img-style'
-          key={this.state.photos[i].file_name} 
-          src={ '/images/'+this.state.photos[i].file_name} 
-        />
+        <Grid container spacing={2} key={Math.random()}>
+          <Grid  key={Math.random()} item>
+              <img className='img-style'
+              key={this.state.photos[i].file_name} 
+              src={ '/images/'+this.state.photos[i].file_name} 
+              />
+          </Grid>
+          <Grid  key={Math.random()} item>
+            <CloseIcon  key={Math.random()} className="closeicon-style"></CloseIcon>
+          </Grid>
+        </Grid>
         )
       userPhotos.push(
         <div key={this.state.photos[i]._id}>
@@ -97,6 +121,7 @@ class UserPhotos extends React.Component {
                     {" "+this.state.photos[i].comments[j].user.first_name+" "} 
                   {this.state.photos[i].comments[j].user.last_name+" :"}</div>
                   <div>{this.state.photos[i].comments[j].comment}  </div>
+                  <CloseIcon onClick={this.deleteComment} value={this.state.photos[i].comments[j]._id} key={this.state.photos[i].comments[j]._id}></CloseIcon>
                 </div>
             </Typography>  
           )

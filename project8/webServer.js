@@ -542,125 +542,148 @@ app.get('/photosOfUser/:id', function (request, response) {
   
 })//end app.get
 
-
-/*
- * URL /photosOfUser/:id - Return the Photos for User (id)
- 
-app.get('/photosOfUser/:id', function (request, response) {
-  console.log('In /photosOfUser/:id')
+//delete comment _id === commentId
+app.get('/deleteComment/:commentId',function(request,response){
+  console.log('In /deleteComment/:commentId')
   if (request.session.login_name===undefined){
-    console.log("undefined login name reutrning 401 /photosOfUser/:id:  request.session:",request.session," id:",request.params.id)
+    console.log("undefined login name reutrning 401 /deleteComment/:commentId:  request.session:",request.session," id:",request.params.id)
     response.status(401).send('User not logged in');
     return
   }else{
-    console.log(" not undefined /photosOfUser/:id request.session:",request.session)    
+    console.log(" not undefined /deleteComment/:commentId request.session:",request.session)    
   }
-    var id = request.params.id;
-    console.log("photos param id:",id)
-    if (id === null || id.length!==24) {
-        console.log('User with _id:' + id + ' not found. sending back 400');
-        response.status(400).send('Not found');
-        return;
-    }
-    var user_info=[]
-    //console.log("build user data for all users")
-    User.find({},function(err,info){
-      if(err){
-        //console.log("**** USER.find err")
-        response.status(500).send(JSON.stringify(err));
-        return;
+  
+  let commentId = request.params.commentId;
+  console.log("commentID:",commentId)
+  if (commentId === null || commentId.length!==24) {
+    console.log('comment with _id:' + commentId + ' not found. sending back 400');
+    response.status(400).send('Not found');
+    return;
+  }
+  Photo.find({user_id:request.session.userId},function(err,info){
+    console.log("deleteComment info:",info)
+    infoClean = JSON.parse(JSON.stringify(info))
+    async.each(infoClean,function(x,callback){
+      console.log("x:",x)
+      console.log("x.comments:",x.comments, " looking for id:",commentId)
+      
+      let res = x.comments.map(function(x){return x._id}).indexOf(commentId)
+      console.log("res:",res,typeof(res))
+      if (res===-1){
+        console.log("no match!")
       }else{
-        (()=>{for (let i=0;i<info.length;i++){
-          console.log("user find info:",info[i])
-          user_info.push({
-                "user_id":info[i]._id,
-                "first_name":info[i].first_name, 
-                "last_name":info[i].last_name})
-          //console.log("user info length in loop:",user_info.length)
+        console.log("match!!!!")
+        let newComment=x.comments.splice(res,1)
+        Photo.updateOne({
+          //what goes here?  
+          //??.comments:newComment,
+        },function(err,res){
+          if(err){
+            console.log("Photo updateOne error:",err)
+          }else{
+            console.log("update!!!!! res:",res)
           }
-          console.log("in iife",user_info.length)
-          Photo.find({'user_id':id},function(err,info){
-            console.log("user info in photo.find:",user_info)
-            var photos=[]
-            if(err){
-              console.log('PhotoFind err',err)
-              response.status(500).send(JSON.stringify(err));
-              return;
-            }else{
-              console.log('Photo find info.len',info.length)  
-              for(let i=0;i<info.length;i++){
-                //console.log(i,info[i])
-                //console.log("len comments:",(info[i].comments.length))
-                if(info[i].comments.length>0){
-                  console.log("comment i:",i," :",info[i].comments) //comments is array
-                  var comm=[]
-                  for(let j=0;j<info[i].comments.length;j++){
-                    console.log("comment j:",j," :",info[i].comments[j]) //comment, date_time, _id, user_id
-                    //find user_id for this user
-                    console.log("comment[j] user_id:",info[i].comments[j].user_id)
-                    for(let k=0;k<user_info.length;k++){
-                      console.log("user_info :",user_info[k].user_id.toString(),info[i].comments[j].user_id.toString() )
-                      if(info[i].comments[j].user_id.toString()===user_info[k].user_id.toString()){
-                        console.log("match")
-                        var user_obj=
-                        JSON.parse(JSON.stringify({
-                            "_id":user_info[k].user_id,
-                            "first_name":user_info[k].first_name,
-                            "last_name":user_info[k].last_name
-                        }))
-                        console.log("user_obj:",user_obj)
-                      }
-                    }
-                    comm.push(
-                      JSON.parse(JSON.stringify({
-                      "comment":info[i].comments[j].comment,
-                      "date_time":info[i].comments[j].date_time,
-                      "_id":info[i].comments[j]._id,
-                      "user":user_obj
-                      }))
-                    )
-                    console.log("comm:",comm)
-                 }
-                }
-                if (comm!==undefined){
-                  console.log("comm not undefined")
-                  photos.push(
-                    JSON.parse(JSON.stringify({
-                    "_id":(info[i]._id),
-                    "user_id":info[i].user_id,
-                    "file_name":info[i].file_name,
-                    "comments":comm,
-                    "date_time":info[i].date_time
-                    })))
-                }else{
-                  console.log("comm undefined 0 len array")
-                  photos.push(
-                    JSON.parse(JSON.stringify( {
-                      "_id":(info[i]._id),
-                      "user_id":(info[i].user_id),
-                      "file_name":info[i].file_name,
-                      "comments":[],
-                      "date_time":info[i].date_time
-                    })))
-                }
-              console.log("photos:",photos)
-              }
-            
-            if (photos.length>0){
-              console.log("/photosOfUser/:id before send, photos:",photos)
-              //console.log("typeof",typeof(photos))
-              //let t = JSON.parse(JSON.stringify(photos))
-              response.status(200).send(photos);
-            }
-          }
-         
-      })//end Photo.find()
-    })();//end User.find()
-  }  
-}) 
-    
-}); 
-*/
+        })
+      } 
+
+         //end updateOne
+      }) // end async.each
+      })//end photofind.
+}); //end app.get
+
+
+//delete photo _id === photoId
+app.get('/deletePhoto/:photoId',function(request,response){
+  console.log('In /photosOfUser/:id')
+  if (request.session.login_name===undefined){
+    console.log("undefined login name reutrning 401 /deletePhoto/:id:  request.session:",request.session," id:",request.params.id)
+    response.status(401).send('User not logged in');
+    return
+  }else{
+    console.log(" not undefined /deletePhoto/:id request.session:",request.session)    
+  }
+
+  let photoId = request.params.photoId;
+  console.log("photoId:",photoId)
+  if (photoId === null || photoId.length!==24) {
+    console.log('User with _id:' + photoId + ' not found. sending back 400');
+    response.status(400).send('Not found');
+    return;
+  }
+  //we should do a photo find to make sure it is really there!
+  Photo.find({_id: photoId},function(err,info){
+    if (err){
+      console.log("Photo.find err")
+      response.status(400).send('photo find() error');
+      return
+    }
+    if(info===null){
+      console.log("id not in db:",photoId)
+      response.status(400).send('id'+photoId+'not in db');
+      return
+    }
+    //ok to do delete
+    Photo.deleteOne({ _id: photoId }, function (err) {
+      if (err){ 
+        response.status(400).send('Photo deleteOne error');
+        return
+      }
+      // deleted at most one tank document
+      response.status(200).send('id: '+photoId+ 'successfully deleted');
+    });
+  })
+});
+
+//delete User _id === userId
+app.get('/deleteUser/:userId',function(req,res){
+  console.log('In /deleteUser/:id')
+  if (request.session.login_name===undefined){
+    console.log("undefined login name reutrning 401 /deleteUser/:id:  request.session:",request.session," id:",request.params.id)
+    response.status(401).send('User not logged in');
+    return
+  }else{
+    console.log(" not undefined /deletePhoto/:id request.session:",request.session)    
+  }
+  if(userId!== request.session.userId){
+    response.status(401).send('UserId must match current logged in user!!');
+    return
+  }
+  let userId = request.params.userId;
+  console.log("/deleteUser/:id userId:",userId)
+  if (userId === null || userId.length!==24) {
+    console.log('User with _id:' + userId + ' null or not 24 chars long. sending back 400');
+    response.status(400).send('Not found');
+    return;
+  }
+
+  //delete photos belonging to user
+  Photo.deleteMany({userId: photoId},function(err){
+    if(err){
+      console.log("/deleteUser/:userId error:",err)
+      response.status(400).send('db Photo.deleteMany error,',err);
+      return
+    }
+    console.log("/deleteUser/:userId delete many successful")
+  })
+  //delete comments belonging to user. under photos db. 
+  //should we do find first?
+
+
+
+  User.deleteOne({ _id: userId }, function (err) {
+    if (err){ 
+      response.status(400).send('Error User.deleteOne id:',userid);
+      return;
+    }
+    // deleted at most one document
+    response.status(400).send('success delete user:',userId);
+
+  });
+  
+  
+});
+
+
 
 var server = app.listen(3000, function () {
     var port = server.address().port;
