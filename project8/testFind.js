@@ -67,7 +67,7 @@ async function getPhotoAsync(){
 //cant have .exec there if we do subdocument query after. 
 async function getPhotoAsyncRecommend(){
   //var p = await (await Photo.findOne({"_id":'5edfe818f231de5c07454d5c'})).exec() cant do this if subdoc query can do a filter
-  var p = await (await Photo.findOne({"_id":'5edfe818f231de5c07454d5c'}))
+  var p = await Photo.findOne({"_id":'5edfe818f231de5c07454d5c'})
   try{
     console.log("getPhotoAsyncRecommended parent doc p:",p)
     console.log("getPhotoAsyncRecommended subdoc special fn:",p.comments.id("5edfe818f231de5c07454d67"))

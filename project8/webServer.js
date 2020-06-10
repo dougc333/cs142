@@ -542,6 +542,81 @@ app.get('/photosOfUser/:id', function (request, response) {
   
 })//end app.get
 
+//extension 1
+app.get('/mostRecentPhoto/:id',function(request,response){
+  //console.log('In /mostRecentPhoto/:id')
+  //if (request.session.login_name===undefined){
+  //  console.log("undefined login name reutrning 401 /deleteComment/:commentId:  request.session:",request.session," id:",request.params.id)
+  //  response.status(401).send('User not logged in');
+  //  return
+  //}else{
+  //  console.log(" not undefined /mostRecentPhoto/:id request.session:",request.session)    
+ // }
+  var id = request.params.id
+  console.log("/mostRecentPhoto/:id id:",id)
+  if (id === null || id.length!==24) {
+    console.log('/mostRecentPhoto with _id:' + id + ' not found. sending back 400');
+    response.status(400).send('Not found');
+    return;
+  }
+  mostRecentPhoto(id,response)
+})
+
+
+async function mostRecentPhoto(id,response){
+  var docs = await Photo.find({user_id:id}).sort({'date_time': 'desc'})
+  try{
+    console.log("docs:",docs)
+    //sort by date the latest one is on top
+    response.status(200).send(docs[0].file_name);
+  }catch(err){
+    console.log("error mostRecentPhoto:",err)
+    response.status(300).send("error mostRecentPhoto");
+  } 
+}
+
+//extension 1
+app.get('/mostCommentsPhoto/:id',function(request,response){
+  //console.log('In /mostCommentsPhoto/:id')
+  //if (request.session.login_name===undefined){
+  //  console.log("undefined login name reutrning 401 /mostCommentsPhoto/:commentId:  request.session:",request.session," id:",request.params.id)
+  //  response.status(401).send('User not logged in');
+  //  return
+  //}else{
+  //  console.log(" not undefined /mostCommentsPhoto/:id request.session:",request.session)    
+ // }
+  var id = request.params.id
+  console.log("/mostCommentsPhoto/:id id:",id)
+  if (id === null || id.length!==24) {
+    console.log('/mostCommentsPhoto with _id:' + id + ' not found. sending back 400');
+    response.status(400).send('Not found');
+    return;
+  }
+  mostCommentsPhoto(id,response)
+})
+//.aggre({user_id:id})
+//tried aggregaton gave up. 
+async function mostCommentsPhoto(id,response){
+  var docs = await Photo.find({user_id:id})
+  try{
+    console.log("docs:",docs)
+    console.log('docs.length:',docs.length)
+    //find photo with most comments. 
+    let lenArr=[]
+    docs.map(x=>lenArr.push(x.comments.length))
+    console.log("lenArr:",lenArr)
+    let maxIndex = lenArr.indexOf(Math.max.apply(Math, lenArr))
+    console.log("maxINdex:",maxIndex)
+    console.log("file with max num coments:",docs[maxIndex].file_name)
+    //sort by date the latest one is on top
+    response.status(200).send(docs[maxIndex].file_name);
+  }catch(err){
+    console.log("error mostCommentsPhoto:",err)
+    response.status(400).send("error mostCommentsPhoto");
+  } 
+}
+
+//extension 5
 //delete comment _id === commentId
 app.get('/deleteComment/:commentId',function(request,response){
   console.log('In /deleteComment/:commentId')
@@ -560,6 +635,7 @@ app.get('/deleteComment/:commentId',function(request,response){
     response.status(400).send('Not found');
     return;
   }
+  
   Photo.find({user_id:request.session.userId},function(err,info){
     console.log("deleteComment info:",info)
     infoClean = JSON.parse(JSON.stringify(info))
@@ -591,7 +667,7 @@ app.get('/deleteComment/:commentId',function(request,response){
       })//end photofind.
 }); //end app.get
 
-
+//extension 5
 //delete photo _id === photoId
 app.get('/deletePhoto/:photoId',function(request,response){
   console.log('In /photosOfUser/:id')
@@ -634,6 +710,7 @@ app.get('/deletePhoto/:photoId',function(request,response){
   })
 });
 
+//extension 5
 //delete User _id === userId
 app.get('/deleteUser/:userId',function(req,res){
   console.log('In /deleteUser/:id')
@@ -667,8 +744,6 @@ app.get('/deleteUser/:userId',function(req,res){
   })
   //delete comments belonging to user. under photos db. 
   //should we do find first?
-
-
 
   User.deleteOne({ _id: userId }, function (err) {
     if (err){ 

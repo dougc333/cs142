@@ -12,12 +12,13 @@ class UserDetail extends React.Component {
     this.state={
       usrid:this.props.match.params.userId,
       fetch_usrdet:'',
-      prevProps:props,
-      popUp:false,
-      addComment:''
+      addComment:'',
+      mostRecentPhoto:'',
+      mostCommentsPhoto:'',
     }     
   }
   
+  //this is still used? 
   handleComment=(c)=>{
     //console.log("UserDetail handleCOmment:",c)
     this.setState({addComment:c},function(){
@@ -39,11 +40,10 @@ class UserDetail extends React.Component {
     .catch(error=>console.log(error))
     
   }
-
+  //update userDetail display here
   componentDidUpdate(){
-    //console.log("UserDetail componentDidUpdate prevProps:",this.state.prevProps)
-    //console.log("UserDetail componentDidUpdate props userId:",this.props.match.params.userId)
-    //console.log("UserDetail componentDidUpdate fetch_userdet:",this.fetch_usrdet)
+    console.log("UserDetail componentDidUpdate props userId:",this.props.match.params.userId)
+    console.log("UserDetail componentDidUpdate fetch_userdet:",this.fetch_usrdet)
     
     if (this.state.usrid !== this.props.match.params.userId){
     Axios.get(`http://localhost:3000/user/${this.props.match.params.userId}`)
@@ -55,9 +55,21 @@ class UserDetail extends React.Component {
       //}
       )})
     .catch(error=>console.log(error))
-   
-    }
-  }
+    
+    Axios.get(`http://localhost:3000/mostRecentPhoto/${this.props.match.params.userId}`)
+    .then(response=>{
+      this.setState({mostRecentPhoto:response.data})
+    })
+    .catch(error=>console.log("mostRecentPhoto error:",error))
+    
+    Axios.get(`http://localhost:3000/mostCommentsPhoto/${this.props.match.params.userId}`)
+    .then(response=>{
+      this.setState({mostCommentsPhoto:response.data})
+    })
+    .catch(error=>console.log("mostCommentsPhoto error:",error))
+    console.log("UserDetail componentDidUpdate state:",this.state)
+  }//end if  
+  }//end componentDidUPdate
  
   appendMe=()=>{
     //console.log("appendMe this.props.match.params.userId:",this.props.match.params.userId)
@@ -72,6 +84,7 @@ class UserDetail extends React.Component {
     
     )
   }
+  //this link is removed after project8
   appendLink(){
     //console.log("UserDetail appendLink: propsUserId:",this.props.match.params.userId)
     return( 
@@ -79,7 +92,9 @@ class UserDetail extends React.Component {
     )
     
   }
+  appendPhotos(){
 
+  }
   render() {
     return (
       <div id="ud">
