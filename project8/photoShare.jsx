@@ -14,6 +14,7 @@ import UserPhotos from './components/userPhotos/UserPhotos';
 import SinglePhoto from './components/userPhotos/SinglePhoto'
 import axios from 'axios'
 import LoginRegister from './components/session/loginRegister';
+import Activity from './components/activities/Activity';
 
 
 class PhotoShare extends React.Component {
@@ -33,24 +34,42 @@ class PhotoShare extends React.Component {
     }
   }
 
+//server call to add login to activities database
+  loginActivity(){
+    console.log("PHOTOSHARE loginActivity()")
+    axios.post('http://localhost:3000/addAct',{type:"login"})
+    .then(res=>{
+      console.log("PHOTOSHARE loginActivity res:",res)
+    })
+    .catch(err=>console.log("PHOTOSHARE loginActivity err:",err))
+  }
+
+  logoutActivity(){
+    console.log("PHOTOSHARE loginActivity()")
+    axios.post('http://localhost:3000/addAct',{type:"logout"})
+    .then(res=>{
+      console.log("PHOTOSHARE logoutActivity res:",res)
+    })
+    .catch(err=>console.log("PHOTOSHARE logoutActivity err:",err))
+  }
+
+
   //login passed to loginRegister component
   setLogin = (c)=>{
-    //console.log("photoShare setLogin")
+    console.log("photoShare setLogin c:",c)
+    this.loginActivity()
     this.setState({logged_in:c,prevLogin:false,isLoggedIn:true})
   }
   //logout passed to topbar component
   setLogout=(c)=>{
-    //console.log("*******photoshare logout, c:",c)
+    console.log("*******photoshare logout, c:",c)
+    this.logoutActivity()
     if(c===undefined){
       this.setState({logged_in:'',isLoggedIn:'',prevLogin:''}) //set back to undefined 
     }
   }
 
-  //passed to topbar for advanced features
-  setEngage=(c)=>{
-    //console.log("photoshare setEngage:",c)
-    this.setState({engage:c})
-  }
+  
 
   //passed to userphotos
   photosMount=(numPhotos)=>{
@@ -59,9 +78,9 @@ class PhotoShare extends React.Component {
   }
   //passed to Userlist, click on UserList element executes and returns newUserId 
   set_CurrentUserID = (newUserId) => {
-    //console.log("******photoShare set_currentUserID newUserId:",newUserId)
+    console.log("******photoShare set_currentUserID newUserId:",newUserId)
     this.setState({current_userId:newUserId, current_userName:this.getName(newUserId)},function(){
-      //console.log("photoshare verify state:",this.state)
+      console.log("photoshare verify state:",this.state)
     }); 
   }
 
@@ -76,9 +95,6 @@ class PhotoShare extends React.Component {
         return Object.entries(this.state.fetchData)[i][1]['first_name']+" "+Object.entries(this.state.fetchData)[i][1]['last_name']
       }
     } 
-  }
-
-  componentDidMount(){
   }
   
   //we need isLoggedIn as a statevar bc. logged_in is undefined
@@ -115,7 +131,7 @@ class PhotoShare extends React.Component {
     if(this.state.isLoggedIn && this.state.logged_in){
      return (
       <div>
-      <UserList userIdArr={this.state.fetchData} onNewUserID={this.set_CurrentUserID } isEngage={this.state.engage} isLoggedIn={this.state.isLoggedIn} photoShareLoginState={this.state.logged_in} />
+      <UserList userIdArr={this.state.fetchData} onNewUserID={this.set_CurrentUserID }  isLoggedIn={this.state.isLoggedIn} photoShareLoginState={this.state.logged_in} />
       </div>
      )
     }
@@ -124,7 +140,7 @@ class PhotoShare extends React.Component {
   appendPhotos(){
     if(!this.state.engage){
       return (<Route path="/photos/:userId"
-      render ={ props => <UserPhotos {...props} userLoginInfo={this.state.logged_in}/> }
+      render ={ props => <UserPhotos {...props} userLoginInfo={this.state.logged_in} loginName={this.state.current_userName}/> }
       />)
     }else{
       return (<Route path="/photos/:userId/"
@@ -144,11 +160,10 @@ class PhotoShare extends React.Component {
     return (
       <HashRouter>
       <div>
-      <div>sdfsdfsd</div>
       <Grid container spacing={8}>
         <Grid item xs={12}>
           <TopBar usr_name={this.state.current_userName} 
-          photoInfo={this.state.photoInfo} onCheckBox={this.setEngage} 
+          photoInfo={this.state.photoInfo} 
           loginInfo={this.state.logged_in} onLogOut={this.setLogout} photoStatus={this.photosMount}/>
         </Grid>
         <div className="cs142-main-topbar-buffer"/>
@@ -166,7 +181,9 @@ class PhotoShare extends React.Component {
                 render={ props => <UserDetail  {...props} /> }
               />
               {this.appendPhotos()}
+              <Route path='/activities' render={props=><Activity {...props}/>} />
               <Route path="/users" component={UserList}  />
+              
             </Switch>
           </Paper>
         </Grid>

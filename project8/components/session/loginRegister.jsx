@@ -28,7 +28,7 @@ class LoginRegister extends React.Component{
   }
 
   componentDidMount(){
-    //console.log("loginRegister componentDidMount")
+    console.log("loginRegister componentDidMount")
   }
   componentDidUpdate(){
     //console.log("loginRegister componentDidUpdate this.state",this.state)
@@ -164,41 +164,53 @@ class LoginRegister extends React.Component{
     }
     axios.post('http://localhost:3000/user',newUser)
     .then((response)=>{
-        //console.log("loginRegister handleRegSubmit /admin/login response.data:",response.data)
-        //console.log("loginRegister handleSubmit userId response.data._id:",response.data._id)
-        //console.log("loginRegister handleSubmit first_name response.data.first_name:",response.data.first_name)
-        //console.log("loginRegister handleSubmit last_name response.data.last_name:",response.data.last_name)
+        console.log("loginRegister newRegUser handleRegSubmit /admin/login response.data:",response.data)
+        console.log("loginRegister newRegUser handleSubmit userId response.data._id:",response.data._id)
+        console.log("loginRegister newRegUser handleSubmit first_name response.data.first_name:",response.data.first_name)
+        console.log("loginRegister newRegUser handleSubmit last_name response.data.last_name:",response.data.last_name)
         this.setState({
-          first_name:response.data.first_name,
-          last_name:response.data.last_name,
           userId:response.data._id,
           registered:true
-        })
-        //console.log("loginRegister handleRegSubmit state after setState:",this.state)
-        document.getElementById('msg').innerHTML="new user created successfully, clearing input fields"
-        this.setState({
-          login_name:'',
-          login_name2:'',
-          password:'',
-          password2:'',
-          password3:'',
-          first_name:'',
-          first_name2:'',
-          last_name:'',
-          last_name2:'',
-          location:'',
-          description:'',
-          occupation:'',  
-          userId:'',
-          logged_in:'', //we should log in? do a database query and login? 
-          registered:true,
+        },function(){
+          console.log("###########LOGINREGISTER setActivity  handleRegSubmit state after setState:",this.state)
+          this.setActivity({type:"registerNew",userId:this.state.userId})
         })
         })//end then
     .catch(function(err){
       //console.log('loginRegister axios post new user error!!!!',err)
       document.getElementById('msg').innerHTML="create new user error:"+err
     })
+  
+  }
 
+  setActivity(newObj){
+    console.log("###########LOGINREGISTER setActivity newObj:",newObj)
+    axios.post(`http://localhost:3000/addAct/`,newObj)
+    .then((response)=>{
+      console.log("###########LOGINREGISTER setActivity NewUser registration activuty response:",response)
+      console.log("###########LOGINREGISTER setActivity clearing fields for next yser")
+      document.getElementById('msg').innerHTML="new user created successfully, clearing input fields"
+      this.setState({
+        login_name:'',
+        login_name2:'',
+        password:'',
+        password2:'',
+        password3:'',
+        first_name:'',
+        first_name2:'',
+        last_name:'',
+        last_name2:'',
+        location:'',
+        description:'',
+        occupation:'',  
+        userId:'',
+        logged_in:'', //we should log in? do a database query and login? 
+        registered:true,
+      })
+    })
+    .catch(error=>{
+      console.log("New registration activity post error:",error)
+    })
   }
 
   render(){

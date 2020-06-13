@@ -40,7 +40,7 @@ var async = require('async');
 var User = require('./schema/user.js');
 var Photo = require('./schema/photo.js');
 var SchemaInfo = require('./schema/schemaInfo.js');
-
+var Activity = require('./schema/activity.js')
 var express = require('express');
 var app = express();
 var fs = require("fs");
@@ -132,6 +132,11 @@ app.get('/test/:p1', function (request, response) {
         response.status(400).send('Bad param ' + param);
     }
 });
+
+
+/*
+ * URL /admin/login - Login page
+ */
 app.post('/admin/login',function(request,response){
   //looking for username/password in database, if there set session 
   console.log('In /admin/login login_name:',request.body.login_name)
@@ -147,12 +152,12 @@ app.post('/admin/login',function(request,response){
         return;
       }
       console.log("/admin/login info:",info)
-      //if(info.password!==password){
-      //  console.log("/admin/login password NOT SAME!!!!!")
-      //  console.log("/admin/login password NOT SAME!!!!! sending 400") 
-      //  response.status(400).send(JSON.stringify(err));
-      //  return;
-     // }
+      if(info.password!==password){
+        console.log("/admin/login password NOT SAME!!!!!")
+        console.log("/admin/login password NOT SAME!!!!! sending 400") 
+        response.status(400).send(JSON.stringify(err));
+        return;
+      }
       if(info===null || password==undefined){
         console.log("returning 401 UserNotFOundinfo null!!!")
         response.status(400).send("User not found");
@@ -161,12 +166,14 @@ app.post('/admin/login',function(request,response){
       if(info.password===password){
         console.log("/admin/login password confirmed!!!! sending back 200, login_name:",request.body.login_name)
         let cleanMe = JSON.parse(JSON.stringify(info))
-        //console.log("cleanMe:",cleanMe)
+        console.log("cleanMe:",cleanMe, "sending status 200 login success")
+        //session variable for server set here!!!!
         request.session.userId=cleanMe._id
         request.session.first_name=cleanMe.first_name
         request.session.last_name=cleanMe.last_name
         request.session.login_name=cleanMe.login_name
         response.status(200).send(cleanMe);
+        
       }else{
         console.log("admin/login passwords dont match returning 400 login_name:",request.body.login_name)
         response.status(400).send("Password not match");
@@ -175,17 +182,20 @@ app.post('/admin/login',function(request,response){
     })
   }
 });
-
+/*
+ * URL /user/ called from login page when registreing user
+ */
 app.post('/user',function(request,response){
-  console.log("In /user")
-  if (request.session.login_name===undefined){
-    console.log("undefined /user request.session:",request.session)
-    response.status(401).send('User not logged in');
-    return
-  }else{
-    console.log(" not undefined /user request.session:",request.session) 
-    console.log(" /user request.session.login_name:",request.session.login_name)   
-  }
+  console.log("In /user creating new user!!!")
+  //not logged in no user login check!!! 
+  //if (request.session.login_name===undefined){
+  //  console.log("undefined /user request.session:",request.session)
+  //  response.status(401).send('User not logged in');
+  //  return
+  //}else{
+  //  console.log(" not undefined /user request.session:",request.session) 
+  //  console.log(" /user request.session.login_name:",request.session.login_name)   
+ // }
   console.log("/user response.body:",request.body)
   //create new user
   let newUser={
@@ -219,6 +229,9 @@ app.post('/user',function(request,response){
 
 })
 
+/*
+ * URL /photos/new - Called from Topbar.jsx when adding photo
+ */
 app.post('/photos/new',function(request,response){
   console.log('In /photos/new')
   if (request.session.login_name===undefined){
@@ -273,12 +286,23 @@ app.post('/photos/new',function(request,response){
         response.status(400).send('database create photo error');
         return;
       }
-      console.log("photo/new response:",info)
+      //recreate the object to send back
+      let returnObj={
+        id:info._id,
+        file_name:filename,
+        user_id:request.session.userId,
+        first_name:request.session.first_name,
+        last_name:request.session.last_name  
+      }
+      console.log("photo/new response:",returnObj)
       response.status(200).send(info);
     })
 });
 })
 
+/*
+ * URL /commentsOfPhoto/:photoID - adds comment to comment array in Photo Object in Photos collection in mongo cs142project db 
+ */
 app.post('/commentsOfPhoto/:photoId',function(request,response){
   let pId = request.params.photoId;
   console.log(' In /commentsOfPhoto/:photoId photoID:',request.params.photoId)
@@ -328,7 +352,9 @@ app.post('/commentsOfPhoto/:photoId',function(request,response){
     })
   })
 })
-
+/*
+ * URL /admin/logout - Call on logout from topbar button. Logout displayed in page
+ */
 app.post('/admin/logout',function(request,response){
   console.log('In /admin/logout')
   console.log("/admin/logout request.session",request.session)
@@ -343,9 +369,6 @@ app.post('/admin/logout',function(request,response){
   request.session.destroy();
   console.log("request.session after destroy:",request.session) 
   response.status(200).send('Logged Out');
-  
-  //add redirect?
-  
 });
 
 
@@ -413,11 +436,17 @@ app.get('/user/:id', function (request, response) {
             "description":info[0].description,
             "occupation":info[0].occupation,
         }
+        console.log("/user/:id return_obj",return_obj)
+        console.log("user/id sending back 200")
         response.status(200).end(JSON.stringify(return_obj));
       }
     });    
 });
 
+/*
+ * URL /commentsOfUser/:id - Returns comments for user_id.
+ * input: userid, output: numComments, numPhotos per user. Originally for EC 
+ */
 app.get('/commentsOfUser/:id',function(request, response){
   console.log(' In /commentsOfUser/:id')
   if (request.session.login_name===undefined){
@@ -457,6 +486,9 @@ app.get('/commentsOfUser/:id',function(request, response){
 
 })
 
+/*
+ * URL /photosOfUser/:id - Fixed after project7. Returns comment formatted array in photo db to be comments, first_name, last_name 
+ */
 app.get('/photosOfUser/:id', function (request, response) {
   console.log('In /photosOfUser/:id')
   if (request.session.login_name===undefined){
@@ -544,14 +576,14 @@ app.get('/photosOfUser/:id', function (request, response) {
 
 //extension 1
 app.get('/mostRecentPhoto/:id',function(request,response){
-  //console.log('In /mostRecentPhoto/:id')
-  //if (request.session.login_name===undefined){
-  //  console.log("undefined login name reutrning 401 /deleteComment/:commentId:  request.session:",request.session," id:",request.params.id)
-  //  response.status(401).send('User not logged in');
-  //  return
-  //}else{
-  //  console.log(" not undefined /mostRecentPhoto/:id request.session:",request.session)    
- // }
+  console.log('In /mostRecentPhoto/:id')
+  if (request.session.login_name===undefined){
+    console.log("undefined login name reutrning 401 /deleteComment/:commentId:  request.session:",request.session," id:",request.params.id)
+    response.status(401).send('User not logged in');
+    return
+  }else{
+    console.log(" not undefined /mostRecentPhoto/:id request.session:",request.session)    
+  }
   var id = request.params.id
   console.log("/mostRecentPhoto/:id id:",id)
   if (id === null || id.length!==24) {
@@ -562,13 +594,13 @@ app.get('/mostRecentPhoto/:id',function(request,response){
   mostRecentPhoto(id,response)
 })
 
-
+//verify is desc what they want? 
 async function mostRecentPhoto(id,response){
   var docs = await Photo.find({user_id:id}).sort({'date_time': 'desc'})
   try{
     console.log("docs:",docs)
     //sort by date the latest one is on top
-    response.status(200).send(docs[0].file_name);
+    response.status(200).send({"file_name":docs[0].file_name,"date_time":docs[0].date_time});
   }catch(err){
     console.log("error mostRecentPhoto:",err)
     response.status(300).send("error mostRecentPhoto");
@@ -577,14 +609,14 @@ async function mostRecentPhoto(id,response){
 
 //extension 1
 app.get('/mostCommentsPhoto/:id',function(request,response){
-  //console.log('In /mostCommentsPhoto/:id')
-  //if (request.session.login_name===undefined){
-  //  console.log("undefined login name reutrning 401 /mostCommentsPhoto/:commentId:  request.session:",request.session," id:",request.params.id)
-  //  response.status(401).send('User not logged in');
-  //  return
-  //}else{
-  //  console.log(" not undefined /mostCommentsPhoto/:id request.session:",request.session)    
- // }
+  console.log('In /mostCommentsPhoto/:id')
+  if (request.session.login_name===undefined){
+    console.log("undefined login name reutrning 401 /mostCommentsPhoto/:commentId:  request.session:",request.session," id:",request.params.id)
+    response.status(401).send('User not logged in');
+    return
+  }else{
+    console.log(" not undefined /mostCommentsPhoto/:id request.session:",request.session)    
+  }
   var id = request.params.id
   console.log("/mostCommentsPhoto/:id id:",id)
   if (id === null || id.length!==24) {
@@ -594,8 +626,7 @@ app.get('/mostCommentsPhoto/:id',function(request,response){
   }
   mostCommentsPhoto(id,response)
 })
-//.aggre({user_id:id})
-//tried aggregaton gave up. 
+//extension 1
 async function mostCommentsPhoto(id,response){
   var docs = await Photo.find({user_id:id})
   try{
@@ -609,17 +640,112 @@ async function mostCommentsPhoto(id,response){
     console.log("maxINdex:",maxIndex)
     console.log("file with max num coments:",docs[maxIndex].file_name)
     //sort by date the latest one is on top
-    response.status(200).send(docs[maxIndex].file_name);
+    response.status(200).send({"file_name":docs[maxIndex].file_name,"numComments":lenArr[maxIndex]});
   }catch(err){
     console.log("error mostCommentsPhoto:",err)
     response.status(400).send("error mostCommentsPhoto");
   } 
 }
 
+//extension 2
+//user is session.userId, type is in get request.
+app.post('/addAct/',function(request,response){
+  console.log("/addAct/ type:",request.body.type)
+  if(request.body.type==='login' || request.body.type==='logout' ){
+    console.log("addAct login or logout type!!!")
+    Activity.create({
+      type:request.body.type,
+      user_id: request.session.userId,
+    },function(err){
+      if(err){
+        console.log("activity create error:",err)
+        response.status(400).send("activity create error");
+        return
+      }
+      console.log("success info")
+      response.status(200).send("login/logout activity success created!!");
+    })  
+  }//end if login || logout
+
+  if(request.body.type==='uploadPhoto'){
+  console.log("/addAct uploading photo response.body:",response.body)
+    Activity.create({
+      type:request.body.type,
+      user_id: request.session.userId,
+      file_name:request.body.file_name,
+    },function(err){
+      if(err){
+        console.log("activity create error:",err)
+        response.status(400).send("activity create error");
+        return
+      }
+      console.log("success uploaddPhoto")
+      response.status(200).send("success uploadPhoto");
+    })
+  }//end uploadPhoto||addComment
+
+  if(request.body.type==='addComment'){
+    console.log("/addAct addComment response.body:",response.body)
+      Activity.create({
+        type:request.body.type,
+        user_id: request.session.userId,
+        file_name:request.body.file_name,
+        first_name:request.session.first_name,
+        last_name: request.session.last_name,
+      },function(err){
+        if(err){
+          console.log("activity create error:",err)
+          response.status(400).send("activity create error");
+          return
+        }
+        console.log("success addComment")
+        response.status(200).send("success addComment");
+      })
+    }//end addComment
+
+    if(request.body.type==='registerNew'){
+      console.log("/addAct registerNew response.body:",response.body)
+        Activity.create({
+          type:request.body.type,
+          user_id:request.body.userId,
+        },function(err,info){
+          if(err){
+            console.log("activity create error:",err)
+            response.status(400).send("activity create error");
+            return
+          }
+          console.log("success registerNew info:",info)
+          response.status(200).send(info);
+        })
+      }//end addComment
+
+})
+
+//extension 2
+//input: user_id, output, most 5 recent activities for user_id ===id. 
+app.get('/act/:id',function(request,response){
+  let id=request.params.id
+  console.log("/act id:",id)
+  getActivityAsync(id,response)
+})
+// same as desc vs -1 verified. 
+async function getActivityAsync(id,response){
+  let res = await Activity.find({user_id:id}).sort({date_time:-1}).limit(5)
+  try{
+    console.log("res:",res)
+    response.status(200).send(res)
+  }catch(error){
+    console.log("error Activity find:",error)
+  }
+}
+
+
 //extension 5
 //delete comment _id === commentId
-app.get('/deleteComment/:commentId',function(request,response){
-  console.log('In /deleteComment/:commentId')
+//input commentId and photoId. 
+app.post('/deleteComment/',function(request,response){
+  console.log('In /deleteComment/')
+  console.log("request.body",request.body)
   if (request.session.login_name===undefined){
     console.log("undefined login name reutrning 401 /deleteComment/:commentId:  request.session:",request.session," id:",request.params.id)
     response.status(401).send('User not logged in');
@@ -628,43 +754,51 @@ app.get('/deleteComment/:commentId',function(request,response){
     console.log(" not undefined /deleteComment/:commentId request.session:",request.session)    
   }
   
-  let commentId = request.params.commentId;
-  console.log("commentID:",commentId)
-  if (commentId === null || commentId.length!==24) {
-    console.log('comment with _id:' + commentId + ' not found. sending back 400');
-    response.status(400).send('Not found');
-    return;
-  }
+  let commentId = request.body.comment_id
+  let photoId = request.body.photo_id
+  console.log("commentId:",commentId, " photoId:",photoId)
   
-  Photo.find({user_id:request.session.userId},function(err,info){
-    console.log("deleteComment info:",info)
-    infoClean = JSON.parse(JSON.stringify(info))
-    async.each(infoClean,function(x,callback){
-      console.log("x:",x)
-      console.log("x.comments:",x.comments, " looking for id:",commentId)
-      
-      let res = x.comments.map(function(x){return x._id}).indexOf(commentId)
-      console.log("res:",res,typeof(res))
-      if (res===-1){
-        console.log("no match!")
-      }else{
-        console.log("match!!!!")
-        let newComment=x.comments.splice(res,1)
-        Photo.updateOne({
-          //what goes here?  
-          //??.comments:newComment,
-        },function(err,res){
+  Photo.findById(photoId,function(err,info){
+    if(err){
+      console.log("comments delete photo not found:",err)
+      response.status(400).send('comments delete photo not found:');
+      return
+    }
+    //check userId comment
+    console.log("delete comment Photo findById:",info)
+    //find comment and check for owner first, res is index of comment in array.
+    let res = info.comments.map(function(x){return x._id}).indexOf(commentId)
+    console.log("res:",res,typeof(res))
+    if(res===-1){
+      console.log("no match!!!")
+    }else{
+      console.log("match!!!!")
+      console.log("matched comment:",info.comments[res])
+      console.log("matched comment info.comments[res].user_id",JSON.parse(JSON.stringify(info)).comments[res].user_id)
+      console.log("matched comment response.session.userId",request.session.userId)
+      //check owner of comment
+      if(JSON.parse(JSON.stringify(info)).comments[res].user_id===request.session.userId){
+        console.log("Delete comment userId verified!!!!")
+        //p.comments.id("5edfe818f231de5c07454d67").remove()
+        info.comments.id(commentId).remove()
+        info.save(function(err){
           if(err){
-            console.log("Photo updateOne error:",err)
-          }else{
-            console.log("update!!!!! res:",res)
+            console.log("comments delete parent object photo did not save")
+            response.status(400).send("comments delete parent object photo did not save");
+            return
           }
+          //should we do another find to make sure it not there? 
+          response.status(200).send('deleted');
         })
-      } 
-
-         //end updateOne
-      }) // end async.each
-      })//end photofind.
+      }else{
+        console.log("matched comment cant delete comments you dont own!!!!")
+        response.status(400).send('matched comment cant delete comments you dont own');
+        return
+      }
+      
+  
+    }
+  })//end photofind.
 }); //end app.get
 
 //extension 5
@@ -687,12 +821,20 @@ app.get('/deletePhoto/:photoId',function(request,response){
     return;
   }
   //we should do a photo find to make sure it is really there!
+  //user can only delete the photo they own!!!
   Photo.find({_id: photoId},function(err,info){
     if (err){
       console.log("Photo.find err")
       response.status(400).send('photo find() error');
       return
     }
+    //check userId photo
+    if(request.session.userId!==info.user_id){
+      console.log("Photo delete error can only delete photos you are owner of")
+      response.status(400).send('photo delete error can only delete photos you are owner of');
+      return
+    }
+
     if(info===null){
       console.log("id not in db:",photoId)
       response.status(400).send('id'+photoId+'not in db');
@@ -704,7 +846,7 @@ app.get('/deletePhoto/:photoId',function(request,response){
         response.status(400).send('Photo deleteOne error');
         return
       }
-      // deleted at most one tank document
+      // deleted at most one document
       response.status(200).send('id: '+photoId+ 'successfully deleted');
     });
   })
@@ -732,8 +874,6 @@ app.get('/deleteUser/:userId',function(req,res){
     response.status(400).send('Not found');
     return;
   }
-
-  //delete photos belonging to user
   Photo.deleteMany({userId: photoId},function(err){
     if(err){
       console.log("/deleteUser/:userId error:",err)
@@ -743,22 +883,78 @@ app.get('/deleteUser/:userId',function(req,res){
     console.log("/deleteUser/:userId delete many successful")
   })
   //delete comments belonging to user. under photos db. 
-  //should we do find first?
+  //copy code here from above should do async, await to make more modular
 
   User.deleteOne({ _id: userId }, function (err) {
     if (err){ 
       response.status(400).send('Error User.deleteOne id:',userid);
       return;
     }
-    // deleted at most one document
     response.status(400).send('success delete user:',userId);
-
   });
   
   
 });
 
+async function deletePhotos(id,response){
+  let res = Photo.deleteMany({userId: id})
+  try{
+    console.log("async deletePhotos res:",res)
+    response.status(200).send(res)
+  }catch(error){
+    console.log("error async deletePhotos :",error)
+    response.status(400).send("error async deletePhotos :",error)
+  }
+}
 
+async function deleteUser(id,response){
+  let res = await User.deleteOne({ _id: id })
+  try{
+    console.log("async deleteUser res:",res)
+    response.status(200).send(res)
+  }catch(error){
+    console.log("error async deleteUser :",error)
+    response.status(400).send("error async deleteUser:",error)
+  }
+}
+//subdocumnent delete
+async function deleteComments(photoId,commentId,response){
+  let res = await Photo.findOne({"_id":photoId})
+  try{
+    console.log("async deleteComments photoFindOne res:",res)
+    //check userid of comment before remove NOT ADDED yet!!!
+    let resFind = info.comments.map(function(x){return x._id}).indexOf(commentId)
+    console.log("res:",res,typeof(res))
+    if(resFind!==-1){
+      //if(JSON.parse(JSON.stringify(res)).comments[commentId].user_id===request.session.userId){
+      //}
+    }
+    
+    res.comments.id(commentId).remove() //this finds it? verify. 
+    //this should be another await. 
+    let saveRes = await p.save()
+    try{
+      console.log("saveRes:",saveRes)
+      response.status(200).send(saveRes)  
+    }catch(err){
+      console.log("error p.save")
+      response.status(400).send("error async  deleteComments:",error)
+    }
+  }catch(error){
+    console.log("error async deleteComments:",error)
+    response.status(400).send("error async  deleteComments:",error)
+  }
+}
+async function deleteFavorites(id,response){
+  let res = await Favorite.deleteMany({user_id: id })
+  try{
+    console.log("async deleteFavorites res:",res)
+    response.status(200).send(res)
+  }catch(error){
+    console.log("error deleteFavorites deleteMany:",error)
+    response.status(400).send("error async deleteFavorites deleteMany:",error)
+  }
+}
 
 var server = app.listen(3000, function () {
     var port = server.address().port;

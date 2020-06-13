@@ -1,3 +1,6 @@
+//dialog imaage test https://codesandbox.io/embed/q3zy4r2np4
+
+
 var mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
@@ -7,6 +10,7 @@ var async = require('async');
 var User = require('./schema/user.js');
 var Photo = require('./schema/photo.js');
 var SchemaInfo = require('./schema/schemaInfo.js');
+var Activity = require('./schema/activity.js');
 
 var express = require('express');
 var app = express();
@@ -84,6 +88,23 @@ async function getPhotoAsyncRecommend(){
     console.log(err.stack)
   }
 }
+
+
+app.get('/act/:id',function(request,response){
+  let id=request.params.id
+  console.log("/act id:",id)
+  getActivityAsync(id)
+})
+// same as desc vs -1 verified. 
+async function getActivityAsync(id){
+  let res = await Activity.find({user_id:id}).sort({date_time:-1}).limit(5)
+  try{
+    console.log("res:",res)
+  }catch(error){
+    console.log("error Activity find:",error)
+  }
+}
+
 
 
 

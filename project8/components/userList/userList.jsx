@@ -23,7 +23,6 @@ class UserList extends React.Component {
       clickedUser:'',
       current_userId:'',
       prevProps:props,
-      engage:'',
       addBubbles:'',
       commentPhoto:'',
       logged_in:'',
@@ -76,11 +75,7 @@ class UserList extends React.Component {
 
       //this.setState({userId:this.props.userIdArr})
       //console.log("userList componentDidUpdate this.state.prevProps:",this.state.prevProps)
-      if(this.props.isEngage!==this.state.engage)
-      {
-         //console.log('UserList componentDidUpdate setEngage!!!!!!!!!!!')
-         this.setState({engage:this.props.isEngage})
-      } 
+     
       if(this.props.isLoggedIn!==this.state.areYouLoggedIn)
       { 
         //console.log('UserList componentDidUpdate setLogin and web request!!!!!!!!!!! this.props:',this.props)
@@ -115,7 +110,7 @@ class UserList extends React.Component {
       }
     }
   }
-
+  //
   handleNewUser = (event) =>{
     this.props.onNewUserID(event.currentTarget.getAttribute('value'))
   }
@@ -129,22 +124,7 @@ class UserList extends React.Component {
     this.handleNewUser(event)
   }
 
-  addBubbles(id){
-    //console.log("addBubbles:id",id,this.state.engage,this.props.isEngage)
-    //console.log(this.state.commentPhoto.find(x=>x.id===id))
-    return(
-      <div>
-      <CommentIcon className='badge' ></CommentIcon>
-      <Badge color="primary" badgeContent={this.state.commentPhoto.find(x=>x.id===id).numComments} >
-      {circle}
-      </Badge>
-      <PhotoIcon></PhotoIcon>
-      <Badge color="secondary" badgeContent={this.state.commentPhoto.find(x=>x.id===id).numPhotos} >
-      {circle}
-      </Badge>
-      </div>
-      )
-  }
+
 
   append(){
     let e=[]
@@ -156,8 +136,6 @@ class UserList extends React.Component {
           <div key={x._id}>
           <ListItem >
             <ListItemText onClick = {this.handleClick} value={x._id} primary={x.first_name+" "+x.last_name}></ListItemText>
-            {(this.props.isEngage===true) ? this.addBubbles(x._id):null }
-
           </ListItem>
           <Divider />
           </div>

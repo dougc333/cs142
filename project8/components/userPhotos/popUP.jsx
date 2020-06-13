@@ -10,12 +10,14 @@ class PopUP extends Component {
     this.state={
       add_comment:'',
       photoID:'',
+      photoName:'',
+      login_name:'',
     }
   }
   componentDidMount(){
     //console.log("UserPhotos popUP componentDidMount:",this.props)
-    //console.log("UserPhotos popUP componentDidMOount this.props.photoID:",this.props.photoID)
-    this.setState({photoID:this.props.photoID})
+    console.log("UserPhotos popUP componentDidMOount this.props.photoID:",this.props.photoID," photoName:",this.props.photoName)
+    this.setState({photoID:this.props.photoID,photoName:this.props.photoName,login_name:this.props.loginName})
   }
   handleClick = () => {
    this.props.toggle();
@@ -43,6 +45,22 @@ class PopUP extends Component {
     })
     .catch(error=>{
       //console.log("UserPhoto popUP comment post error:",error)
+    })
+    let obj={
+      type:"addComment",
+      file_name:this.state.photoName,
+    }
+    console.log('$$$$$$$$USER PHOTO ADD COMMENT POPUP obj:',obj)
+    this.activityComment(obj)
+  }
+
+  activityComment(commentObj){
+    axios.post(`http://localhost:3000/addAct/`,commentObj)
+    .then((response)=>{
+      console.log("UserPhoto popUP activityComment response:",response)
+    })
+    .catch(error=>{
+      console.log("UserPhoto popUP comment post error:",error)
     })
   }
   commentChange=(event)=>{

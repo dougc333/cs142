@@ -18,12 +18,17 @@ class UserPhotos extends React.Component {
       photos: '',
       userId: this.props.match.params.userId,
       prevProps:props,
-      login_info:''
+      login_info:'',
+      login_name:'',
     }
   }
   
   componentDidMount(){
-    this.setState({login_info:this.props.userLoginInfo})
+    this.setState({login_info:this.props.userLoginInfo,login_name:this.props.loginName})
+    console.log("USERPHOTO LOGIN_INFO this.state:",this.state)
+    console.log("USERPHOTO LOGIN_INFO this.props.userLoginInfo:",this.props.userLoginInfo)
+    console.log("USERPHOTO LOGIN_NAME:",this.props.loginName)
+    
     Axios.get(`http://localhost:3000/photosOfUser/${this.props.match.params.userId}`)
     .then(response=>{
       this.setState({photos:response.data,userId:this.props.match.params.userId,isMounted:true}
@@ -56,12 +61,24 @@ class UserPhotos extends React.Component {
   
   deleteComment=(e)=>{ 
     console.log("userPhotos deletComment e:",e)
-    console.log("should see commentID!!!!!",e.currentTarget.outerHTML)
+    //console.log("should see commentID!!!!!",e.currentTarget.outerHTML)
     console.log("should see commentID!!!!!",e.currentTarget.getAttribute("value")) 
-    console.log("type:",typeof(e.currentTarget.getAttribute("value")))
-    Axios.get(`http://localhost:3000/deleteComment/${e.currentTarget.getAttribute("value")}`)
+    //console.log("type:",typeof(e.currentTarget.getAttribute("value")))
+    console.log("UserPhotos deleteComment photoId:",e.currentTarget.getAttribute("photo_id"))
+    let myObj = {
+      "photo_id":e.currentTarget.getAttribute("photo_id"),
+      "comment_id":e.currentTarget.getAttribute("value")
+    }
+    Axios.post('http://localhost:3000/deleteComment/',myObj)
     .then(response=>{
       console.log("deleteComment response:",response)
+      //delete the div! from teh dom! or hide it. This doesnt owrk. 
+      //cached in browser
+      if(response.status===200){
+        console.log("USER PHOTOS comment deleted!!!!!! ")
+      }
+      //if response code is 200, use setState to update the display
+
     })
     .catch(error=>console.log("deleteComment http get error",error))
     
@@ -99,7 +116,9 @@ class UserPhotos extends React.Component {
           <div key={this.state.photos[i].file_name}>
           <Typography color="primary">FileName:{" "+this.state.photos[i].file_name}</Typography>
         </div>
-        <PopUP value='this.state.photos[i]._id' photoID={this.state.photos[i]._id} />
+        <PopUP value='this.state.photos[i]._id' photoID={this.state.photos[i]._id} 
+          photoName={this.state.photos[i].file_name} 
+          loginName={this.state.login_name} />
         </div>
         </div>
 
@@ -121,7 +140,7 @@ class UserPhotos extends React.Component {
                     {" "+this.state.photos[i].comments[j].user.first_name+" "} 
                   {this.state.photos[i].comments[j].user.last_name+" :"}</div>
                   <div>{this.state.photos[i].comments[j].comment}  </div>
-                  <CloseIcon onClick={this.deleteComment} value={this.state.photos[i].comments[j]._id} key={this.state.photos[i].comments[j]._id}></CloseIcon>
+                  <CloseIcon onClick={this.deleteComment} photo_id={this.state.photos[i]._id} value={this.state.photos[i].comments[j]._id} key={this.state.photos[i].comments[j]._id}></CloseIcon>
                 </div>
             </Typography>  
           )

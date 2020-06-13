@@ -4,7 +4,7 @@ import {
 } from '@material-ui/core';
 import './TopBar.css';
 import axios from 'axios'
-
+import AlertDialog from './AlertDialog'
 /**
  * Define TopBar, a React componment of CS142 project #5
  */
@@ -61,23 +61,43 @@ class TopBar extends React.Component {
     })
   }
   
+  
   displayLogin=()=>{
     if(this.state.login_info!=='' && this.state.login_info!==undefined){
       return(
-        <Typography variant="h5" color="inherit" component='span' style={{ flex: 1 }}>
+        <div class="parent">
+          <div class="children left-children">
+        <AlertDialog/>
+        <a href='http://localhost:3000/photo-share.html#/activities'>
+          <Button><span className="logout-button-style">Activities</span></Button>
+        </a>
+        </div>
+        <Typography variant="h6" color="inherit" component='span' style={{ flex: 1 }}>
           Login Name: {this.state.login_info.login_name} 
         </Typography>
+        </div>
       )
     }else if(this.state.login_name===''){
       return(
         <div>
-      <Typography variant="h5" color="inherit" component='span' style={{ flex: 1 }}>
+      <Typography variant="h6" color="inherit" component='span' style={{ flex: 1 }}>
          Please Login: {this.state.login_info.login_name} 
       </Typography>
       <Button><span className='logout-button-style' >Logout</span></Button>
       </div>
       )
     }
+  }
+
+  handleDeleteUser=(e)=>{
+    console.log("topbar delete user!!!")
+    console.log("topbar login info:",this.state.login_info)
+    //do the confirm dialog component! 
+    Axios.get(`/deleteUser/${this.state.login_info.userId}`)
+    .then((res)=>{
+      console.log("deleteuser get response res:",res)
+    })
+    .catch(err=>console.log("error deleteUser get request",err))
   }
   
   //need function from parent, photoshare
@@ -103,13 +123,33 @@ class TopBar extends React.Component {
      domForm.append('uploadedphoto', this.uploadInput.files[0]);
      axios.post('http://localhost:3000/photos/new', domForm)
        .then((res) => {
-         //console.log(res);
+         console.log("photo upload response need ID:",res);
+         let photoObj = {
+           id:res.data._id,
+           file_name:res.data.file_name,
+           user_id:res.data.user_id,
+           type:"uploadPhoto",
+         }
+         this.photoUploadActivity(photoObj)
        })
        .catch(err => console.log(`POST ERR: ${err}`));
-   }
+     //how to get photoID? 
+     //has to be returned on photoPost
+     
+    }
+   
    this.setState({addPhoto:!this.state.addPhoto})
   }
   
+  photoUploadActivity=(pObj)=>{
+    axios.post('http://localhost:3000/addAct/',pObj)
+    .then(res=>{
+      console.log("TopBar uploadPhoto res:",res)
+    })
+    .catch(err=>console.log("TopBar logout err:",err))
+
+  }
+
   displayAddPhoto(){
     if(this.state.addPhoto===true){
       return(
@@ -130,14 +170,14 @@ class TopBar extends React.Component {
     return (
       <AppBar className="cs142-topbar-appBar" position="absolute" >
         <Toolbar>
-          <Typography variant="h5" color="inherit" component='span' style={{ flex: 1 }}>
+          <Typography variant="h6" color="inherit" component='span' style={{ flex: 1 }}>
           Name:DC
           </Typography> 
           {this.displayLogin()}
           {this.displayAddPhoto()}
          
           <Button onClick={this.handleLogout}><span className="logout-button-style">Logout</span></Button>
-          <Typography variant="h5" color="inherit" component='span' style={{ flex: 1 }}>
+          <Typography variant="h6" color="inherit" component='span' style={{ flex: 1 }}>
           User {this.state.name} :{this.props.usr_name}
           </Typography>
         </Toolbar>
