@@ -152,6 +152,12 @@ app.post('/admin/login',function(request,response){
         return;
       }
       console.log("/admin/login info:",info)
+      //is this correct? shouldnt crash the server
+      if(info===null){
+        console.log("null password!!!")
+        response.status(400).send(JSON.stringify(err));
+        return;
+      }
       if(info.password!==password){
         console.log("/admin/login password NOT SAME!!!!!")
         console.log("/admin/login password NOT SAME!!!!! sending 400") 
@@ -418,29 +424,39 @@ app.get('/user/:id', function (request, response) {
       console.log(" not undefined /user/:id request.session:",request.session)    
     }
     var id = request.params.id;
+    console.log("app.get(/user:id) id:",id, " typeof(id):",typeof(id))
     if (id === null || id.length!==24) {
       response.status(400).send('Not found');
       return;
     }
 
     User.find({'_id':id},function(err,info){
+      console.log("User.find _id:id",id)
+      console.log("this is ripley so we khow it is in the DB!!!! ")
       if(err){
-        response.status(500).send(JSON.stringify(err));
+        console.log("error: User find id:",id," err:",err)
+        response.status(400).send("mongodb user.find err");
         return;
-      }else{
-        let return_obj={
-            '_id':info[0]._id, 
-            "first_name":info[0].first_name, 
-            "last_name":info[0].last_name,
-            "location":info[0].location,
-            "description":info[0].description,
-            "occupation":info[0].occupation,
-        }
-        console.log("/user/:id return_obj",return_obj)
-        console.log("user/id sending back 200")
-        response.status(200).end(JSON.stringify(return_obj));
       }
-    });    
+      //why is this length 0!!!!
+      if(info.length===0){
+        console.log("info.length===0",info.length)
+        response.status(400).send("User find null:",id);
+        return;
+      }
+      console.log("app.get(/user/:id) info:",info,"id:",id)
+      let return_obj={
+        '_id':info[0]._id, 
+        "first_name":info[0].first_name, 
+        "last_name":info[0].last_name,
+        "location":info[0].location,
+        "description":info[0].description,
+        "occupation":info[0].occupation,
+      }
+      console.log("/user/:id return_obj",return_obj)
+      console.log("user/id sending back 200")
+      response.status(200).end(JSON.stringify(return_obj));
+    }); //end User find()    
 });
 
 /*
@@ -513,7 +529,7 @@ app.get('/photosOfUser/:id', function (request, response) {
       return
     }
     var userInfo=JSON.parse(JSON.stringify(userInfo))
-    console.log("userInfo:",userInfo)
+    //console.log("userInfo:",userInfo)
     Photo.find({'user_id':id},function(err,photoInfo){
       if(err){
         console.log("User find err:",err)
@@ -522,16 +538,17 @@ app.get('/photosOfUser/:id', function (request, response) {
         return
       }
       var photoInfo = JSON.parse(JSON.stringify(photoInfo))
-      console.log("photoInfo:",photoInfo)
+      //console.log("photoInfo:",photoInfo)
       var photoArr=[]
       async.each(photoInfo,function(x,callback){
-        console.log("photoInfo async each:",x)
+        //console.log("photoInfo async each:",x)
         let commentArr = []
         let photoObj ={
           '_id':x._id,
           'date_time':x.date_time,
           'file_name':x.file_name,
           'user_id':x.user_id,
+          'likes':x.likes,
           'comments':commentArr
         }
         photoArr.push(photoObj)
@@ -628,6 +645,7 @@ app.get('/mostCommentsPhoto/:id',function(request,response){
 })
 //extension 1
 async function mostCommentsPhoto(id,response){
+  console.log("mostCommentsPhoto id:",id)
   var docs = await Photo.find({user_id:id})
   try{
     console.log("docs:",docs)
@@ -723,16 +741,18 @@ app.post('/addAct/',function(request,response){
 
 //extension 2
 //input: user_id, output, most 5 recent activities for user_id ===id. 
-app.get('/act/:id',function(request,response){
-  let id=request.params.id
-  console.log("/act id:",id)
+//do we need id? should be from session... ah why the hell not.. easier to understand
+app.get('/act/',function(request,response){
+  //id doesnt matter only for login user
+  let id=request.session.userId
   getActivityAsync(id,response)
+
 })
 // same as desc vs -1 verified. 
 async function getActivityAsync(id,response){
   let res = await Activity.find({user_id:id}).sort({date_time:-1}).limit(5)
   try{
-    console.log("res:",res)
+    console.log("ACTIITY res:",res)
     response.status(200).send(res)
   }catch(error){
     console.log("error Activity find:",error)
@@ -804,7 +824,7 @@ app.post('/deleteComment/',function(request,response){
 //extension 5
 //delete photo _id === photoId
 app.get('/deletePhoto/:photoId',function(request,response){
-  console.log('In /photosOfUser/:id')
+  console.log('In /deletePhoto/:id',request.params.photoId)
   if (request.session.login_name===undefined){
     console.log("undefined login name reutrning 401 /deletePhoto/:id:  request.session:",request.session," id:",request.params.id)
     response.status(401).send('User not logged in');
@@ -822,14 +842,20 @@ app.get('/deletePhoto/:photoId',function(request,response){
   }
   //we should do a photo find to make sure it is really there!
   //user can only delete the photo they own!!!
-  Photo.find({_id: photoId},function(err,info){
+  Photo.findById(photoId,function(err,info){
     if (err){
       console.log("Photo.find err")
       response.status(400).send('photo find() error');
       return
     }
+    if(info===null){
+      console.log("Photo.find null!!!!!")
+      response.status(400).send('photo find() null!!!');
+      return
+    }
     //check userId photo
-    if(request.session.userId!==info.user_id){
+    console.log("/deletePhoto/id Photo.find(photoid) info:", info)
+    if(request.session.userId!==JSON.parse(JSON.stringify(info)).user_id){
       console.log("Photo delete error can only delete photos you are owner of")
       response.status(400).send('photo delete error can only delete photos you are owner of');
       return
@@ -841,20 +867,21 @@ app.get('/deletePhoto/:photoId',function(request,response){
       return
     }
     //ok to do delete
-    Photo.deleteOne({ _id: photoId }, function (err) {
+    Photo.deleteOne({ _id: photoId }, function (err,info) {
       if (err){ 
         response.status(400).send('Photo deleteOne error');
         return
       }
       // deleted at most one document
-      response.status(200).send('id: '+photoId+ 'successfully deleted');
+      console.log("$$$$$$$$$$deletePhoto deleteOne info:",info)
+      response.status(200).send(info);
     });
   })
 });
 
 //extension 5
 //delete User _id === userId
-app.get('/deleteUser/:userId',function(req,res){
+app.get('/deleteUser/:id',function(request,response){
   console.log('In /deleteUser/:id')
   if (request.session.login_name===undefined){
     console.log("undefined login name reutrning 401 /deleteUser/:id:  request.session:",request.session," id:",request.params.id)
@@ -863,38 +890,147 @@ app.get('/deleteUser/:userId',function(req,res){
   }else{
     console.log(" not undefined /deletePhoto/:id request.session:",request.session)    
   }
+  let userId = request.params.id
   if(userId!== request.session.userId){
+    console.log('UserId must match current logged in user!!')
     response.status(401).send('UserId must match current logged in user!!');
     return
   }
-  let userId = request.params.userId;
-  console.log("/deleteUser/:id userId:",userId)
+  
+  console.log("/deleteUser/:id id:",request.params.id)
   if (userId === null || userId.length!==24) {
     console.log('User with _id:' + userId + ' null or not 24 chars long. sending back 400');
     response.status(400).send('Not found');
     return;
   }
-  Photo.deleteMany({userId: photoId},function(err){
+  //delete comments belonging to user. under photos db. delete comments first.
+  deleteUserFromAllComments(userId,response)
+});
+
+//extension 6
+app.get('/likes/:id',function(request,response){
+  console.log("/like:id")
+  if (request.session.login_name===undefined){
+    console.log("undefined login name reutrning 401 /deleteUser/:id:  request.session:",request.session," id:",request.params.id)
+    response.status(401).send('User not logged in');
+    return
+  }else{
+    console.log(" not undefined /deletePhoto/:id request.session:",request.session)    
+  }  
+
+  let photoId = request.params.id
+  console.log("/like:id photoId:",photoId)
+  Photo.findById(photoId,function(err,info){
+    if(err){
+      console.log("Photo.findById error:",err)
+      response.status(400).send('Photo.findById error');
+      return 
+    }
+    console.log("likes Photo.findById  info:",info)
+    //examine if like is there or not if not add it!. 
+    let res = info.likes.filter(x=>JSON.parse(JSON.stringify(x.user_id))===request.session.userId)
+    console.log("result from filter res should be 0!!!!!!:",res)
+    if (res.length===0){
+      console.log("res null!! add like to array!!")
+      info.likes.push({"user_id":request.session.userId})
+      info.save(function(err,result){
+        if(err){
+          console.log("error p.save")
+          response.status(400).send('error p.save(),',err);
+          return
+        }else{
+          console.log("added like",result)
+          //delete photos 
+        }
+      }) //end save
+    }
+  }) //end Photo.findById
+}) //end get
+
+app.get('/Unlike/:id',function(request,response){
+  console.log("Unlike/:id")
+  if (request.session.login_name===undefined){
+    console.log("undefined login name reutrning 401 /deleteUser/:id:  request.session:",request.session," id:",request.params.id)
+    response.status(401).send('User not logged in');
+    return
+  }else{
+    console.log(" not undefined /deletePhoto/:id request.session:",request.session)    
+  }  
+
+  let photoId = request.params.id
+  console.log("/Unlike:id photoId:",photoId)
+  Photo.findById(photoId,function(err,info){
+    console.log("Unlikes Photo.findById  info:",info)
+    //examine if like is there or not if not add it!. 
+    let res = info.likes.find(x=>JSON.parse(JSON.stringify(x.user_id))===request.session.userId)
+    console.log("result from filter res should be 1!!!!!:",res)
+    if(res.length===1){
+      console.log("likes res not null, remove")
+      info.likes.id(res[0]._id).remove()
+      info.save(function(err,result){
+        if(err){
+          console.log("error p.save")
+          response.status(400).send('error p.save(),',err);
+          return
+        }else{
+          console.log("removed like",result)
+          //delete photos 
+        }
+      }) //end save
+    }//end if res.length===1
+  })//end photo.findById
+
+}) //end get
+
+
+async function deleteUserFromAllComments(user_id,response){
+  let p = await Photo.find({})
+  //console.log("async deleteUserFromAllComments:",session.userId)
+  try{
+    console.log("delUserAllComments list of all photos for user:",p)
+    for (let i=0;i<p.length;i++){
+      console.log("photo[i]:",p[i])
+      console.log("comments:",p[i].comments)
+      let matchUserId = p[i].comments.filter(x=>JSON.parse(JSON.stringify(x.user_id))===user_id)
+      console.log("delAllComments matchUserId:",matchUserId) 
+      for (let j=0;j<matchUserId.length;j++){
+        p[i].comments.id(matchUserId[j]._id).remove()
+        p[i].save(function(err,info){
+        if(err){
+          console.log("error p.save")
+          response.status(400).send('error p.save(),',err);
+          return
+        }else{
+          console.log("deleteUserFromAllComments all comments removed from all photos!!!!",info)
+          //delete photos 
+        }
+        })//end save
+      }//end matchUserId
+    }//end p.length
+   //comments deleted, delete photots
+  }catch(err){
+    console.log(err)
+  }
+  Photo.deleteMany({user_id:user_id},function(err,info){
+    console.log("user delete photo.deleteMany")
     if(err){
       console.log("/deleteUser/:userId error:",err)
       response.status(400).send('db Photo.deleteMany error,',err);
       return
     }
-    console.log("/deleteUser/:userId delete many successful")
+    console.log("/deleteUser/:userId delete.many() successful",info)
   })
-  //delete comments belonging to user. under photos db. 
-  //copy code here from above should do async, await to make more modular
-
-  User.deleteOne({ _id: userId }, function (err) {
-    if (err){ 
+  User.deleteOne({ _id: user_id }, function (err,info) {
+    console.log("user delete User.deleteOne")
+    if (err){
+      console.log("error User.deleteOne") 
       response.status(400).send('Error User.deleteOne id:',userid);
       return;
     }
-    response.status(400).send('success delete user:',userId);
+    console.log("user delete User.deleteOne successful",info)
+    response.status(200).send('success delete user:');
   });
-  
-  
-});
+}
 
 async function deletePhotos(id,response){
   let res = Photo.deleteMany({userId: id})
@@ -929,8 +1065,7 @@ async function deleteComments(photoId,commentId,response){
       //if(JSON.parse(JSON.stringify(res)).comments[commentId].user_id===request.session.userId){
       //}
     }
-    
-    res.comments.id(commentId).remove() //this finds it? verify. 
+    res.comments.user_id(response.session.userId).remove() //this finds it? verify. 
     //this should be another await. 
     let saveRes = await p.save()
     try{
@@ -945,6 +1080,10 @@ async function deleteComments(photoId,commentId,response){
     response.status(400).send("error async  deleteComments:",error)
   }
 }
+
+//async function deleteAllUserComments(response){}
+//
+
 async function deleteFavorites(id,response){
   let res = await Favorite.deleteMany({user_id: id })
   try{

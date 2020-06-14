@@ -20,15 +20,15 @@ class UserDetail extends React.Component {
   
   //this is still used? 
   handleComment=(c)=>{
-    //console.log("UserDetail handleCOmment:",c)
+    console.log("UserDetail handleCOmment:",c)
     this.setState({addComment:c},function(){
       //console.log("UserDetail handleComment setState completed:",this.state)
     })
   }
 
   componentDidMount(){
-    //console.log("UserDetail componentDidMount prevProps:",this.state.prevProps)
-    //console.log("UserDetail componentDidMount props:",this.state.props)
+    console.log("UserDetail componentDidMount prevProps:",this.state.prevProps)
+    console.log("UserDetail componentDidMount props:",this.state.props)
     Axios.get(`http://localhost:3000/user/${this.props.match.params.userId}`)
     .then(response=>{
       console.log("UserDetail componentDidMount /user/:id then response",response); 
@@ -106,8 +106,8 @@ class UserDetail extends React.Component {
  
  
   appendMe=()=>{
-    //console.log("appendMe this.props.match.params.userId:",this.props.match.params.userId)
-    //console.log("appendMe this.state.fetch_usrdet:",this.state.fetch_usrdet)                 
+    console.log("appendMe this.props.match.params.userId:",this.props.match.params.userId)
+    console.log("appendMe this.state.fetch_usrdet:",this.state.fetch_usrdet)                 
     return (
       <Typography component={'div'} color="primary" key={this.state.fetch_usrdet._id}>
         <div>{this.state.fetch_usrdet.first_name+" "+this.state.fetch_usrdet.last_name }</div>
@@ -120,7 +120,7 @@ class UserDetail extends React.Component {
   }
   //this link is removed after project8
   appendLink=()=>{
-    //console.log("UserDetail appendLink: propsUserId:",this.props.match.params.userId)
+    console.log("UserDetail appendLink: propsUserId:",this.props.match.params.userId)
     return( 
       <Link className='photo-link' color="secondary" href={'http://localhost:3000/photo-share.html#/photos/'+this.props.match.params.userId}>Photos</Link>
     )
@@ -128,6 +128,7 @@ class UserDetail extends React.Component {
 // <img src={'/images/'+this.state.mostCommentsPhoto} />
   appendPhotos=()=>{
     let arr=[]
+    console.log("UserDetail appendPhotos() state:",this.state)
     if(this.state.mostRecentPhoto){
     arr.push((
       <div key={Math.random()}>

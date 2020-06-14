@@ -89,6 +89,39 @@ async function getPhotoAsyncRecommend(){
   }
 }
 
+app.get('/delUserAllComments/:id',function(request,response){
+  let user_id = request.params.id
+  console.log("/delUserAllComments/:id",user_id)
+  deleteUserFromAllComments(user_id,response)
+  
+
+})
+
+async function deleteUserFromAllComments(user_id,response){
+  let p = await Photo.find({})
+  //console.log("async deleteUserFromAllComments:",session.userId)
+  try{
+    console.log("delUserAllComments p:",p)
+    for (let i=0;i<p.length;i++){
+      console.log("photo[i]:",p[i])
+      console.log("comments:",p[i].comments)
+      let matchUserId = p[i].comments.filter(x=>JSON.parse(JSON.stringify(x.user_id))===user_id)
+      console.log("delAllComments matchUserId:",matchUserId) 
+      for (let j=0;j<matchUserId.length;j++){
+        p[i].comments.id(matchUserId[j]._id).remove()
+        p[i].save(function(err,info){
+        if(err){
+          console.log("error p.save")
+        }else{
+          console.log("removed",info)
+        }
+     })
+    }
+  }
+  }catch(err){
+    console.log(err)
+  }
+}
 
 app.get('/act/:id',function(request,response){
   let id=request.params.id

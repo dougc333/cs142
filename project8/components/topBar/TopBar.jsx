@@ -61,13 +61,27 @@ class TopBar extends React.Component {
     })
   }
   
+  foo=()=>{
+    console.log("foo login_info:",this.state.login_info);
+    //do teh server calls here then
+    axios.get(`http://localhost:3000/deleteUser/${this.state.login_info.userId}`)
+    .then(res=>{
+      console.log("res from get/deleteUser:",res)
+    })
+    .catch(error=>console.log("get deleteUser error:",error))
+    //do Logout wont work cause... user doesnt exist anymore. 
+    //axios.post('/admin/logout',{})
+    //.then(resLogout=>console.log(resLogout))
+    //.catch(errLogout=>console.log(errLogout))
+
+  }
   
   displayLogin=()=>{
     if(this.state.login_info!=='' && this.state.login_info!==undefined){
       return(
-        <div class="parent">
-          <div class="children left-children">
-        <AlertDialog/>
+        <div className="parent">
+          <div className="children left-children">
+        <AlertDialog foo={this.foo}/>
         <a href='http://localhost:3000/photo-share.html#/activities'>
           <Button><span className="logout-button-style">Activities</span></Button>
         </a>
@@ -137,7 +151,6 @@ class TopBar extends React.Component {
      //has to be returned on photoPost
      
     }
-   
    this.setState({addPhoto:!this.state.addPhoto})
   }
   

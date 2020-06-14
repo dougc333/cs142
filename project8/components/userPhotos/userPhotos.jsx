@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Typography,Link,TextField,Box,Grid
+  Typography,Link,Grid,Button
 } from '@material-ui/core';
 import './userPhotos.css';
 import Axios from 'axios'
@@ -40,7 +40,7 @@ class UserPhotos extends React.Component {
   }
 
   componentDidUpdate(){
-    //console.log("UserPhotos componentDidUpdate userId:",this.props.match.params.userId)
+    console.log("UserPhotos componentDidUpdate userId:",this.props.match.params.userId)
     if (this.state.userId !== this.props.match.params.userId){
     Axios.get(`http://localhost:3000/photosOfUser/${this.props.match.params.userId}`)
     .then(response=>{
@@ -84,7 +84,23 @@ class UserPhotos extends React.Component {
     
   }
 
+  deletePhoto=(e)=>{
+    console.log("userPhotos deletePhoto e:",e)
+    console.log("UserPhotos deletePhoto photoid:",e.currentTarget.getAttribute("photoid"))
+    Axios.get(`http://localhost:3000/deletePhoto/${e.currentTarget.getAttribute("photoid")}`,)
+    .then(response=>{
+      console.log("deletePhoto response:",response)
+      //delete the div! from teh dom! or hide it. This doesnt owrk. 
+      //cached in browser
+      if(response.status===200){
+        console.log("USER PHOTOS photo deleted!!!!!! ")
+      }
+      //if response code is 200, use setState to update the display
+      //that doesnt work!!
 
+    })
+    .catch(error=>console.log("deletePhoto http get error",error))
+  }
 
   addPhotos(){
     let userPhotos=[]
@@ -104,7 +120,7 @@ class UserPhotos extends React.Component {
               />
           </Grid>
           <Grid  key={Math.random()} item>
-            <CloseIcon  key={Math.random()} className="closeicon-style"></CloseIcon>
+            <CloseIcon  onClick={this.deletePhoto} key={Math.random()} photoid={this.state.photos[i]._id} className="closeicon-style"></CloseIcon>
           </Grid>
         </Grid>
         )
@@ -124,10 +140,11 @@ class UserPhotos extends React.Component {
 
        )
       if(this.state.photos[i].comments!==undefined){
-        //console.log("addPhotos comments:",this.state.photos[i].comments) 
+        console.log("addPhotos comments:",this.state.photos[i].comments) 
         for (let j=0;j<this.state.photos[i].comments.length;j++){
-          //console.log("addPhotos comments user:",this.state.photos[i].comments[j].user) 
-          //console.log("addPhotos comments user _id:",this.state.photos[i].comments[j].user._id) 
+          console.log("addPhotos comments user:",this.state.photos[i].comments[j].user) 
+          console.log("addPhotos comments user _id:",this.state.photos[i].comments[j].user._id) 
+          console.log("addPhotos this.state.photos[i]:",this.state.photos[i])
           userPhotos.push(
             <Typography component="div" variant="body2" key={Math.random()}>
                 <div>
@@ -140,7 +157,7 @@ class UserPhotos extends React.Component {
                     {" "+this.state.photos[i].comments[j].user.first_name+" "} 
                   {this.state.photos[i].comments[j].user.last_name+" :"}</div>
                   <div>{this.state.photos[i].comments[j].comment}  </div>
-                  <CloseIcon onClick={this.deleteComment} photo_id={this.state.photos[i]._id} value={this.state.photos[i].comments[j]._id} key={this.state.photos[i].comments[j]._id}></CloseIcon>
+                     <Button onClick={this.deleteComment} photo_id={this.state.photos[i]._id} value={this.state.photos[i].comments[j]._id} key={this.state.photos[i].comments[j]._id}>Delete Comment</Button>
                 </div>
             </Typography>  
           )
@@ -150,7 +167,7 @@ class UserPhotos extends React.Component {
     }
     return userPhotos  
   }//end addPhotos
-
+  
   render() {
     return (
       <Typography component={"div"} variant="body1">

@@ -5,8 +5,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
-export default function AlertDialog() {
+import Axios from 'axios'
+export default function AlertDialog(props) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -15,11 +15,15 @@ export default function AlertDialog() {
 
   const handleClose = (e) => {
     setOpen(false);
+    console.log("props:",props)
     console.log("handleCloseDisagree",e)
     console.log("handleCloseDisagree e.currentTarget:",e.currentTarget)
     console.log("handleCloseDisagree e.currentTarget:",e.currentTarget.value)
-    
-    
+    if(e.currentTarget.value==="agree"){
+      //do user delete
+      console.log("AlertDialog user delete!!!")
+      console.log(props.foo())
+    }
   };
 
   return (

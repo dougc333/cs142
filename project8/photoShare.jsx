@@ -73,7 +73,7 @@ class PhotoShare extends React.Component {
 
   //passed to userphotos
   photosMount=(numPhotos)=>{
-    //console.log("******PhothoShare photosMount:",numPhotos)
+    console.log("******PhothoShare photosMount:",numPhotos)
     this.setState({photoInfo:numPhotos})
   }
   //passed to Userlist, click on UserList element executes and returns newUserId 
@@ -181,7 +181,7 @@ class PhotoShare extends React.Component {
                 render={ props => <UserDetail  {...props} /> }
               />
               {this.appendPhotos()}
-              <Route path='/activities' render={props=><Activity {...props}/>} />
+              <Route path='/activities' render={props=><Activity loginInfo={this.state.logged_in} {...props} />} />
               <Route path="/users" component={UserList}  />
               
             </Switch>
