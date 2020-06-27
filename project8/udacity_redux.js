@@ -1,7 +1,7 @@
 //test_redux.js
 
 //https://github.com/udacity/reactnd-redux-todos-goals/blob/action-creators/index.js
-//ok big deal. 
+//ok not good. he implemented his own "redux" which isn't really true 
 
 function todos(state=[],action){
   if(action.type==='ADD_TODO'){
