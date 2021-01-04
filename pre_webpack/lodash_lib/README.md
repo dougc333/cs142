@@ -1,3 +1,6 @@
+Follow instrustions from https://webpack.js.org/guides/getting-started/
+
+
 1) mkdir name of project
 2) cd into no_libs
 3) mkdir src, mkdir dist
