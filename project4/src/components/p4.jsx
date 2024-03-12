@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import DynamicView from './components/dynamic/DynamicView';
-import Header from './components/header/Header';
-import './components/dynamic/DynamicView.css';
+import DynamicView from './dynamic/DynamicView';
+import Header from './header/Header';
+import './dynamic/DynamicView.css';
 
 
 

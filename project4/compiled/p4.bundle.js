@@ -81,19 +81,19 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./p4.jsx");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/components/p4.jsx");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./p4.jsx":
-/*!****************!*\
-  !*** ./p4.jsx ***!
-  \****************/
+/***/ "./src/components/p4.jsx":
+/*!*******************************!*\
+  !*** ./src/components/p4.jsx ***!
+  \*******************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("throw new Error(\"Module build failed (from ./node_modules/babel-loader/lib/index.js):\\nSyntaxError: Unexpected token (11:4)\\n\\n\\u001b[0m \\u001b[90m  9 | \\u001b[39m\\n \\u001b[90m 10 | \\u001b[39m\\u001b[33mReactDOM\\u001b[39m\\u001b[33m.\\u001b[39mrender(\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 11 | \\u001b[39m    \\u001b[33m<\\u001b[39m\\u001b[33mdiv\\u001b[39m\\u001b[33m>\\u001b[39m\\n \\u001b[90m    | \\u001b[39m    \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 12 | \\u001b[39m      \\u001b[33m<\\u001b[39m\\u001b[33mHeader\\u001b[39m \\u001b[33m/\\u001b[39m\\u001b[33m>\\u001b[39m\\n \\u001b[90m 13 | \\u001b[39m      \\u001b[33m<\\u001b[39m\\u001b[33mDynamicView\\u001b[39m \\u001b[33m/\\u001b[39m\\u001b[33m>\\u001b[39m\\n \\u001b[90m 14 | \\u001b[39m    \\u001b[33m<\\u001b[39m\\u001b[33m/\\u001b[39m\\u001b[33mdiv\\u001b[39m\\u001b[33m>\\u001b[39m\\u001b[33m,\\u001b[39m\\u001b[0m\\n\");//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9wNC5qc3guanMiLCJzb3VyY2VzIjpbXSwibWFwcGluZ3MiOiIiLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./p4.jsx\n");
+eval("throw new Error(\"Module build failed (from ./node_modules/babel-loader/lib/index.js):\\nSyntaxError: Unexpected token (11:4)\\n\\n\\u001b[0m \\u001b[90m  9 | \\u001b[39m\\n \\u001b[90m 10 | \\u001b[39m\\u001b[33mReactDOM\\u001b[39m\\u001b[33m.\\u001b[39mrender(\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 11 | \\u001b[39m    \\u001b[33m<\\u001b[39m\\u001b[33mdiv\\u001b[39m\\u001b[33m>\\u001b[39m\\n \\u001b[90m    | \\u001b[39m    \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 12 | \\u001b[39m      \\u001b[33m<\\u001b[39m\\u001b[33mHeader\\u001b[39m \\u001b[33m/\\u001b[39m\\u001b[33m>\\u001b[39m\\n \\u001b[90m 13 | \\u001b[39m      \\u001b[33m<\\u001b[39m\\u001b[33mDynamicView\\u001b[39m \\u001b[33m/\\u001b[39m\\u001b[33m>\\u001b[39m\\n \\u001b[90m 14 | \\u001b[39m    \\u001b[33m<\\u001b[39m\\u001b[33m/\\u001b[39m\\u001b[33mdiv\\u001b[39m\\u001b[33m>\\u001b[39m\\u001b[33m,\\u001b[39m\\u001b[0m\\n\");//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9zcmMvY29tcG9uZW50cy9wNC5qc3guanMiLCJzb3VyY2VzIjpbXSwibWFwcGluZ3MiOiIiLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///./src/components/p4.jsx\n");
 
 /***/ })
 

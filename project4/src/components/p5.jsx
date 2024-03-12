@@ -1,9 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import DeepLink from './components/link/DeepLink';
-
-
-
+import DeepLink from './link/DeepLink';
 
 
 ReactDOM.render(

@@ -1,9 +1,9 @@
 module.exports = {
   entry: {
-    gettingStarted: './gettingStarted.jsx',
-    p2: './p2.jsx',
-    p4: './p4.jsx',
-    p5: './p5.jsx',
+    gettingStarted: './src/components/gettingStarted.jsx',
+    p2: './src/components/p2.jsx',
+    p4: './src/components/p4.jsx',
+    p5: './src/components/p5.jsx',
   },
   module: {
     rules: [
