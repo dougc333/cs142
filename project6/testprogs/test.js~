@@ -1,9 +1,0 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-var xhr = new XMLHttpRequest();
-xhr.onreadystatechange=function(){
-  console.log(xhr.readyState);
-  console.log(xhr.responseText);
-}
-xhr.open('GET','http://localhost:3000/test/info');
-xhr.send();
-
