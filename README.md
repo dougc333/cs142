@@ -16,15 +16,7 @@ Reading in data, basic charts, hooks for state
 ## Project 3 
 Components in a layout. Parent/Child 
 
-## Project 4
 
-## Project 5
-
-## Project 6
-
-## Project 7
-
-## Project 8
 
 
 
